@@ -5,16 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tinkuy App</title>
 
+    <!-- Leaflet CSS & JS (Mapa) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+    <!-- Swiper CSS (Carrusel) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+    <style>
+        /* Estilos base */
+        body { font-family: sans-serif; margin: 0; padding: 0; background-color: #fafafa; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        
+        /* Menú de navegación móvil */
+        .navbar { background: #2b5797; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar h2 { margin: 0; font-size: 20px; }
+        .menu-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+        .mobile-menu { display: none; background: #1e3f70; padding: 10px 20px; }
+        .mobile-menu a { display: block; color: white; text-decoration: none; padding: 10px 0; border-bottom: 1px solid #2b5797; }
+        .mobile-menu a:last-child { border-bottom: none; }
+        
+        /* Estilos del Carrusel Swiper */
+        .swiper { width: 100%; height: 200px; margin-bottom: 30px; border-radius: 8px; }
+        .swiper-slide { display: flex; align-items: center; justify-content: center; background: #e0e0e0; border-radius: 8px; font-size: 18px; color: #555; }
+        
+        /* Cajas de entrada mejoradas para celular */
+        input, textarea { box-sizing: border-box; }
+    </style>
 </head>
 <body>
-    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h1>Muro Tinkuy </h1>
+    <!-- Barra de navegación y menú hamburguesa -->
+    <nav class="navbar">
+        <h2>Tinkuy App</h2>
+        <button class="menu-btn" id="btn-menu">☰</button>
+    </nav>
+    <div class="mobile-menu" id="menu-desplegable">
+        <a href="#">Inicio</a>
+        <a href="#mapa">Mapa de Rutas</a>
+        <a href="#muro-publicaciones">Comunidad</a>
+        <a href="#">Perfil</a>
+    </div>
+
+    <div class="container">
+        <h1>Muro Tinkuy</h1>
         <p>Comparte tus salidas regenerativas y actividades culturales.</p>
 
-        <!-- Formulario para publicar -->
+        <!-- Banner horizontal debajo del subtítulo -->
+        <img src="banner-placeholder.jpg" alt="Banner Tinkuy" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 25px; background-color: #ddd;">
+
+        <!-- Apartado del Mapa Interactivo (Movido arriba) -->
+        <h2>Mapa de Rutas Turisticas</h2>
+        <div id="mapa" style="height: 350px; width: 100%; border-radius: 8px; margin-bottom: 30px; border: 2px solid #ccc; z-index: 1;"></div>
+
+        <!-- Carrusel de Imágenes Destacadas -->
+        <h2>Galería de la Comunidad</h2>
+        <div class="swiper mySwiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">Aqui va la imagen 1 :v </div>
+                <div class="swiper-slide">aqui la imagen 2 </div>
+                <div class="swiper-slide">img 3 aquí</div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+
+        <!-- Formulario para publicar (Movido abajo del mapa) -->
         <div style="background: #f4f4f4; padding: 15px; border-radius: 8px;">
             <h3>Subir nueva actividad</h3>
             <input type="text" id="titulo" placeholder="Ej: Reforestación local" style="width: 100%; margin-bottom: 10px; padding: 8px;"><br>
@@ -23,14 +77,10 @@
             
             <textarea id="descripcion" placeholder="¿Qué impacto tuvo esta salida?" style="width: 100%; margin-bottom: 10px; padding: 8px; height: 80px;"></textarea><br>
             
-            <button id="btn-publicar" style="background: #2b5797; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">Publicar Actividad</button>
+            <button id="btn-publicar" style="background: #2b5797; color: white; border: none; padding: 12px 15px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold;">Publicar Actividad</button>
         </div>
 
         <hr style="margin: 30px 0;">
-        
-        <!-- Apartado del Mapa Interactivo -->
-        <h2>Mapa de Rutas Turisticas y Culturales</h2>
-        <div id="mapa" style="height: 400px; width: 100%; border-radius: 8px; margin-bottom: 30px; border: 2px solid #ccc;"></div>
 
         <!-- Aquí aparecerán las publicaciones de la comunidad -->
         <h2>Publicaciones Recientes</h2>
@@ -39,12 +89,13 @@
         </div>
     </div>
 
-    
+    <!-- Script de Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
     <script type="module">
         // 1. Importamos Firebase y las herramientas de Analytics y Firestore
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-analytics.js";
-        // IMPORTANTE: Aquí se agregaron getDocs y query para poder leer la base de datos
         import { getFirestore, collection, addDoc, getDocs, query } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
         // 2. Tus credenciales exactas
@@ -73,14 +124,13 @@
 
             // Validación para no enviar datos vacíos
             if (titulo === "" || lugar === "" || descripcion === "") {
-                alert("¡Por favor llena todos los campos :v ");
+                alert("Por favor llena todos los campos del formulario.");
                 return; 
             }
 
             botonPublicar.innerText = "Guardando...";
 
             try {
-                // Se envía el documento a la colección "publicaciones"
                 await addDoc(collection(db, "publicaciones"), {
                     titulo: titulo,
                     lugar: lugar,
@@ -89,7 +139,7 @@
                     salida_aprobada: false // Estado inicial
                 });
 
-                alert("¡Actividad publicada con éxito en Tinkuy! 🌱");
+                alert("Actividad publicada con éxito en Tinkuy.");
 
                 // Se limpian los campos del formulario
                 document.getElementById('titulo').value = "";
@@ -97,7 +147,7 @@
                 document.getElementById('descripcion').value = "";
                 botonPublicar.innerText = "Publicar Actividad";
 
-                // IMPORTANTE: Llamamos a la función para que el muro se actualice al instante
+                // Actualizamos el muro al instante
                 cargarPublicaciones();
 
             } catch (error) {
@@ -114,35 +164,30 @@
             contenedorMuro.innerHTML = "<p>Cargando actividades de la comunidad...</p>";
             
             try {
-                // Traemos todas las publicaciones de la colección
                 const consulta = query(collection(db, "publicaciones"));
                 const querySnapshot = await getDocs(consulta);
 
                 contenedorMuro.innerHTML = ""; // Limpiamos el mensaje de carga
 
                 if (querySnapshot.empty) {
-                    contenedorMuro.innerHTML = "<p>Aún no hay publicaciones. ¡Sé el primero!</p>";
+                    contenedorMuro.innerHTML = "<p>Aún no hay publicaciones. Sé el primero.</p>";
                     return;
                 }
 
-                // Recorremos cada documento que nos devuelve Firebase
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
                     
-                    // Creamos la estructura HTML de la tarjeta
                     const tarjeta = `
                         <div style="background: white; border: 1px solid #ccc; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
                             <h3 style="margin-top: 0; color: #2b5797;">${data.titulo}</h3>
-                            <p><strong> Lugar:</strong> ${data.lugar}</p>
+                            <p><strong>Lugar:</strong> ${data.lugar}</p>
                             <p>${data.descripcion}</p>
                             
-                            <!-- Etiqueta dinámica: Naranja si es falso, Verde si Tinkuy la aprueba -->
                             <span style="font-size: 12px; font-weight: bold; padding: 4px 8px; border-radius: 4px; background-color: ${data.salida_aprobada ? '#d4edda' : '#fff3cd'}; color: ${data.salida_aprobada ? '#155724' : '#856404'};">
-                                ${data.salida_aprobada ? ' Salida Regenerativa Aprobada' : ' Pendiente de revisión Tinkuy'}
+                                ${data.salida_aprobada ? 'Salida Regenerativa Aprobada' : 'Pendiente de revisión Tinkuy'}
                             </span>
                         </div>
                     `;
-                    // La sumamos al contenedor del muro
                     contenedorMuro.innerHTML += tarjeta;
                 });
 
@@ -152,34 +197,43 @@
             }
         }
 
-        // Ejecutamos la función apenas el usuario entra a la página
-        cargarPublicaciones();
-        // Ejecutamos la función apenas el usuario entra a la página
+        // Ejecutamos la función apenas el usuario entra a la página (solo una vez)
         cargarPublicaciones();
 
         // 6. Lógica del Mapa Interactivo (Leaflet)
-        // Las coordenadas [-11.93, -75.28] centran el mapa cerca a la región de Junín
         const map = L.map('mapa').setView([-11.93, -75.28], 8);
 
-        // Cargamos los gráficos de las calles (gratis desde OpenStreetMap)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
-        // Pines de las zonas identificadas por Tinkuy
-        L.marker([-12.065, -75.204]).addTo(map)
-            .bindPopup("<b>Huancayo</b><br>Salidas culturales y biodiversidad.");
+        L.marker([-12.065, -75.204]).addTo(map).bindPopup("<b>Huancayo</b><br>Salidas culturales y biodiversidad.");
+        L.marker([-11.420, -75.690]).addTo(map).bindPopup("<b>Tarma</b><br>Zona de acciones comunitarias.");
+        L.marker([-11.056, -75.327]).addTo(map).bindPopup("<b>Chanchamayo</b><br>Flora, fauna y rutas regenerativas.");
+        L.marker([-12.061, -75.286]).addTo(map).bindPopup("<b>Chupaca</b><br>Educacion comunitaria.");
+        
+        // 7. Lógica del Menú Desplegable (Hamburguesa)
+        const btnMenu = document.getElementById('btn-menu');
+        const menuDesplegable = document.getElementById('menu-desplegable');
 
-        L.marker([-11.420, -75.690]).addTo(map)
-            .bindPopup("<b>Tarma</b><br>Zona de acciones comunitarias.");
+        btnMenu.addEventListener('click', () => {
+            if (menuDesplegable.style.display === 'block') {
+                menuDesplegable.style.display = 'none';
+            } else {
+                menuDesplegable.style.display = 'block';
+            }
+        });
 
-        L.marker([-11.056, -75.327]).addTo(map)
-            .bindPopup("<b>Chanchamayo</b><br>Flora, fauna y rutas regenerativas.");
+        // 8. Lógica del Carrusel (Swiper)
+        const swiper = new Swiper('.mySwiper', {
+            pagination: {
+                el: ".swiper-pagination",
+                dynamicBullets: true,
+            },
+            loop: true, // Para que el carrusel sea infinito
+        });
 
-        L.marker([-12.061, -75.286]).addTo(map)
-            .bindPopup("<b>Chupaca</b><br>Educacion comunitaria.");
-            
     </script>
 </body>
 </html>
