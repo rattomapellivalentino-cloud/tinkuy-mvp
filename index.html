@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tinkuy App</title>
+</head>
+<body>
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1>Muro Tinkuy 🌱</h1>
+        <p>Comparte tus salidas regenerativas y actividades culturales.</p>
+
+        <!-- Formulario para publicar -->
+        <div style="background: #f4f4f4; padding: 15px; border-radius: 8px;">
+            <h3>Subir nueva actividad</h3>
+            <input type="text" id="titulo" placeholder="Ej: Reforestación local" style="width: 100%; margin-bottom: 10px; padding: 8px;"><br>
+            
+            <input type="text" id="lugar" placeholder="Lugar (Ej: Chupaca, Concepción)" style="width: 100%; margin-bottom: 10px; padding: 8px;"><br>
+            
+            <textarea id="descripcion" placeholder="¿Qué impacto tuvo esta salida?" style="width: 100%; margin-bottom: 10px; padding: 8px; height: 80px;"></textarea><br>
+            
+            <button id="btn-publicar" style="background: #2b5797; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">Publicar Actividad</button>
+        </div>
+
+        <hr style="margin: 30px 0;">
+
+        <!-- Aquí aparecerán las publicaciones de la comunidad -->
+        <h2>Publicaciones Recientes</h2>
+        <div id="muro-publicaciones">
+            <!-- El código JavaScript inyectará las tarjetas aquí -->
+        </div>
+    </div>
+
+    <script type="module">
+        // 1. Importamos Firebase y las herramientas de Analytics y Firestore
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-analytics.js";
+        // IMPORTANTE: Aquí se agregaron getDocs y query para poder leer la base de datos
+        import { getFirestore, collection, addDoc, getDocs, query } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+        // 2. Tus credenciales exactas
+        const firebaseConfig = {
+            apiKey: "AIzaSyDneTN4o-E8GaXm5mtAmXGhjcDaaXuU7ug",
+            authDomain: "tinkuy-61501.firebaseapp.com",
+            projectId: "tinkuy-61501",
+            storageBucket: "tinkuy-61501.firebasestorage.app",
+            messagingSenderId: "113402782339",
+            appId: "1:113402782339:web:655fa71a9b18f5ac3571b6",
+            measurementId: "G-7K149PMLBZ"
+        };
+
+        // 3. Inicializamos Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+
+        // 4. Lógica para enviar los datos a Firestore al hacer clic
+        const botonPublicar = document.getElementById('btn-publicar');
+
+        botonPublicar.addEventListener('click', async () => {
+            const titulo = document.getElementById('titulo').value;
+            const lugar = document.getElementById('lugar').value;
+            const descripcion = document.getElementById('descripcion').value;
+
+            // Validación para no enviar datos vacíos
+            if (titulo === "" || lugar === "" || descripcion === "") {
+                alert("¡Por favor llena todos los campos :v ");
+                return; 
+            }
+
+            botonPublicar.innerText = "Guardando...";
+
+            try {
+                // Se envía el documento a la colección "publicaciones"
+                await addDoc(collection(db, "publicaciones"), {
+                    titulo: titulo,
+                    lugar: lugar,
+                    descripcion: descripcion,
+                    fecha: new Date(),
+                    salida_aprobada: false // Estado inicial
+                });
+
+                alert("¡Actividad publicada con éxito en Tinkuy! 🌱");
+
+                // Se limpian los campos del formulario
+                document.getElementById('titulo').value = "";
+                document.getElementById('lugar').value = "";
+                document.getElementById('descripcion').value = "";
+                botonPublicar.innerText = "Publicar Actividad";
+
+                // IMPORTANTE: Llamamos a la función para que el muro se actualice al instante
+                cargarPublicaciones();
+
+            } catch (error) {
+                console.error("Error al guardar: ", error);
+                alert("Hubo un error al intentar publicar.");
+                botonPublicar.innerText = "Publicar Actividad";
+            }
+        });
+
+        // 5. Lógica para leer los datos y mostrarlos en el muro
+        const contenedorMuro = document.getElementById('muro-publicaciones');
+
+        async function cargarPublicaciones() {
+            contenedorMuro.innerHTML = "<p>Cargando actividades de la comunidad...</p>";
+            
+            try {
+                // Traemos todas las publicaciones de la colección
+                const consulta = query(collection(db, "publicaciones"));
+                const querySnapshot = await getDocs(consulta);
+
+                contenedorMuro.innerHTML = ""; // Limpiamos el mensaje de carga
+
+                if (querySnapshot.empty) {
+                    contenedorMuro.innerHTML = "<p>Aún no hay publicaciones. ¡Sé el primero!</p>";
+                    return;
+                }
+
+                // Recorremos cada documento que nos devuelve Firebase
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    
+                    // Creamos la estructura HTML de la tarjeta
+                    const tarjeta = `
+                        <div style="background: white; border: 1px solid #ccc; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                            <h3 style="margin-top: 0; color: #2b5797;">${data.titulo}</h3>
+                            <p><strong>📍 Lugar:</strong> ${data.lugar}</p>
+                            <p>${data.descripcion}</p>
+                            
+                            <!-- Etiqueta dinámica: Naranja si es falso, Verde si Tinkuy la aprueba -->
+                            <span style="font-size: 12px; font-weight: bold; padding: 4px 8px; border-radius: 4px; background-color: ${data.salida_aprobada ? '#d4edda' : '#fff3cd'}; color: ${data.salida_aprobada ? '#155724' : '#856404'};">
+                                ${data.salida_aprobada ? '✅ Salida Regenerativa Aprobada' : '⏳ Pendiente de revisión Tinkuy'}
+                            </span>
+                        </div>
+                    `;
+                    // La sumamos al contenedor del muro
+                    contenedorMuro.innerHTML += tarjeta;
+                });
+
+            } catch (error) {
+                console.error("Error al cargar el muro: ", error);
+                contenedorMuro.innerHTML = "<p>Hubo un problema al cargar el muro.</p>";
+            }
+        }
+
+        // Ejecutamos la función apenas el usuario entra a la página
+        cargarPublicaciones();
+    </script>
+</body>
+</html>
