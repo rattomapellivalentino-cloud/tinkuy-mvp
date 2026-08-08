@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tinkuy App</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 </head>
 <body>
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h1>Muro Tinkuy 🌱</h1>
+        <h1>Muro Tinkuy </h1>
         <p>Comparte tus salidas regenerativas y actividades culturales.</p>
 
         <!-- Formulario para publicar -->
@@ -23,6 +27,10 @@
         </div>
 
         <hr style="margin: 30px 0;">
+        
+        <!-- Apartado del Mapa Interactivo -->
+        <h2>Mapa de Rutas Turisticas y Culturales</h2>
+        <div id="mapa" style="height: 400px; width: 100%; border-radius: 8px; margin-bottom: 30px; border: 2px solid #ccc;"></div>
 
         <!-- Aquí aparecerán las publicaciones de la comunidad -->
         <h2>Publicaciones Recientes</h2>
@@ -31,6 +39,7 @@
         </div>
     </div>
 
+    
     <script type="module">
         // 1. Importamos Firebase y las herramientas de Analytics y Firestore
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
@@ -124,12 +133,12 @@
                     const tarjeta = `
                         <div style="background: white; border: 1px solid #ccc; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
                             <h3 style="margin-top: 0; color: #2b5797;">${data.titulo}</h3>
-                            <p><strong>📍 Lugar:</strong> ${data.lugar}</p>
+                            <p><strong> Lugar:</strong> ${data.lugar}</p>
                             <p>${data.descripcion}</p>
                             
                             <!-- Etiqueta dinámica: Naranja si es falso, Verde si Tinkuy la aprueba -->
                             <span style="font-size: 12px; font-weight: bold; padding: 4px 8px; border-radius: 4px; background-color: ${data.salida_aprobada ? '#d4edda' : '#fff3cd'}; color: ${data.salida_aprobada ? '#155724' : '#856404'};">
-                                ${data.salida_aprobada ? '✅ Salida Regenerativa Aprobada' : '⏳ Pendiente de revisión Tinkuy'}
+                                ${data.salida_aprobada ? ' Salida Regenerativa Aprobada' : ' Pendiente de revisión Tinkuy'}
                             </span>
                         </div>
                     `;
@@ -145,6 +154,32 @@
 
         // Ejecutamos la función apenas el usuario entra a la página
         cargarPublicaciones();
+        // Ejecutamos la función apenas el usuario entra a la página
+        cargarPublicaciones();
+
+        // 6. Lógica del Mapa Interactivo (Leaflet)
+        // Las coordenadas [-11.93, -75.28] centran el mapa cerca a la región de Junín
+        const map = L.map('mapa').setView([-11.93, -75.28], 8);
+
+        // Cargamos los gráficos de las calles (gratis desde OpenStreetMap)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // Pines de las zonas identificadas por Tinkuy
+        L.marker([-12.065, -75.204]).addTo(map)
+            .bindPopup("<b>Huancayo</b><br>Salidas culturales y biodiversidad.");
+
+        L.marker([-11.420, -75.690]).addTo(map)
+            .bindPopup("<b>Tarma</b><br>Zona de acciones comunitarias.");
+
+        L.marker([-11.056, -75.327]).addTo(map)
+            .bindPopup("<b>Chanchamayo</b><br>Flora, fauna y rutas regenerativas.");
+
+        L.marker([-12.061, -75.286]).addTo(map)
+            .bindPopup("<b>Chupaca</b><br>Educacion comunitaria.");
+            
     </script>
 </body>
 </html>
