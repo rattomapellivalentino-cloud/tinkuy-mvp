@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, query, doc, updateDoc, arrayUnion, getDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-storage.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDneTN4o-E8GaXm5mtAmXGhjcDaaXuU7ug",
@@ -15,6 +16,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+const storage = getStorage(app);
 const provider = new GoogleAuthProvider();
 
 let currentUser = null;
@@ -36,17 +38,19 @@ onAuthStateChanged(auth, async (user) => {
         document.getElementById('perfil-email').innerText = user.email;
         if(user.photoURL) document.getElementById('perfil-foto').src = user.photoURL;
         
-        // Verificar si es admin
+        // Verificar si es admin (por correo)
         try {
-            const adminDoc = await getDoc(doc(db, "admins", user.uid));
-            if (adminDoc.exists()) {
-                isUserAdmin = true;
-                if(badgeAdmin) badgeAdmin.classList.remove('vista-oculta');
-                if(seccionAdminEvento) seccionAdminEvento.classList.remove('vista-oculta');
-            } else {
-                isUserAdmin = false;
-                if(badgeAdmin) badgeAdmin.classList.add('vista-oculta');
-                if(seccionAdminEvento) seccionAdminEvento.classList.add('vista-oculta');
+            if(user.email) {
+                const adminDoc = await getDoc(doc(db, "admins", user.email));
+                if (adminDoc.exists()) {
+                    isUserAdmin = true;
+                    if(badgeAdmin) badgeAdmin.classList.remove('vista-oculta');
+                    if(seccionAdminEvento) seccionAdminEvento.classList.remove('vista-oculta');
+                } else {
+                    isUserAdmin = false;
+                    if(badgeAdmin) badgeAdmin.classList.add('vista-oculta');
+                    if(seccionAdminEvento) seccionAdminEvento.classList.add('vista-oculta');
+                }
             }
         } catch(e) {
             console.error("Error verificando admin", e);
@@ -83,6 +87,35 @@ if(btnLogout) {
 
 const map = L.map('mapa-fondo', { zoomControl: false }).setView([-12.065, -75.204], 10);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 20, attribution: '© OpenStreetMap © CARTO' }).addTo(map);
+
+// Función para comprimir imagen antes de subirla
+function compressImage(file, maxWidth = 1000) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                if (width > maxWidth) {
+                    height = Math.round(height * maxWidth / width);
+                    width = maxWidth;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                // Retornar en formato Data URL con compresión jpg 0.7
+                resolve(canvas.toDataURL('image/jpeg', 0.7));
+            };
+        };
+    });
+}
 
 window.addEventListener('resize', () => { map.invalidateSize(); });
 setTimeout(() => { map.invalidateSize(); }, 100);
@@ -176,10 +209,35 @@ botonPublicar.addEventListener('click', async () => {
     const titulo = document.getElementById('titulo').value; const lugar = document.getElementById('lugar').value; const descripcion = document.getElementById('descripcion').value;
     if (titulo === "" || lugar === "" || descripcion === "") { alert("Completa los datos."); return; }
     botonPublicar.innerText = "Subiendo...";
+    
     try {
-        await addDoc(collection(db, "publicaciones"), { titulo: titulo, lugar: lugar, descripcion: descripcion, fecha: new Date(), salida_aprobada: false, comentarios: [] });
-        document.getElementById('titulo').value = ""; document.getElementById('lugar').value = ""; document.getElementById('descripcion').value = ""; botonPublicar.innerText = "Publicar en Raíz"; cargarPublicaciones();
-    } catch (error) { alert("Error."); botonPublicar.innerText = "Publicar"; }
+        let fotoUrl = "";
+        const inputFoto = document.getElementById('foto-muro');
+        if(inputFoto && inputFoto.files && inputFoto.files[0]) {
+            botonPublicar.innerText = "Procesando foto...";
+            const dataUrl = await compressImage(inputFoto.files[0]);
+            const fileName = `publicaciones/${Date.now()}_${inputFoto.files[0].name}`;
+            const storageRef = ref(storage, fileName);
+            botonPublicar.innerText = "Subiendo foto...";
+            await uploadString(storageRef, dataUrl, 'data_url');
+            fotoUrl = await getDownloadURL(storageRef);
+        }
+
+        botonPublicar.innerText = "Guardando...";
+        await addDoc(collection(db, "publicaciones"), { 
+            titulo: titulo, 
+            lugar: lugar, 
+            descripcion: descripcion, 
+            fecha: new Date(), 
+            salida_aprobada: false, 
+            comentarios: [],
+            fotoUrl: fotoUrl,
+            autor: currentUser ? currentUser.displayName : "Comunidad"
+        });
+        document.getElementById('titulo').value = ""; document.getElementById('lugar').value = ""; document.getElementById('descripcion').value = ""; 
+        if(inputFoto) inputFoto.value = "";
+        botonPublicar.innerText = "Publicar en Raíz"; cargarPublicaciones();
+    } catch (error) { console.error(error); alert("Error."); botonPublicar.innerText = "Publicar en Raíz"; }
 });
 
 const contenedorMuro = document.getElementById('muro-publicaciones');
@@ -196,6 +254,7 @@ async function cargarPublicaciones() {
             publicacionesHTML += `
                 <div class="post-card">
                     <h3>${data.titulo}</h3><p>${data.lugar}</p><p>${data.descripcion}</p>
+                    ${data.fotoUrl ? `<img src="${data.fotoUrl}" style="width:100%; max-height:250px; object-fit:cover; border-radius:8px; margin-bottom:10px;">` : ''}
                     <span class="etiqueta" style="background: ${data.salida_aprobada ? 'var(--leaf)' : '#eee'};"> ${data.salida_aprobada ? 'Verificado' : 'Pendiente'} </span>
                     <div class="comentarios-seccion">
                         <div class="comentarios-lista">${comentariosHTML}</div>
@@ -421,21 +480,40 @@ if (btnGuardarLugar) {
         const center = map.getCenter();
         
         try {
+            let fotoUrl = "";
+            const inputFoto = document.getElementById('foto-lugar');
+            if(inputFoto && inputFoto.files && inputFoto.files[0]) {
+                btnGuardarLugar.innerText = "Procesando foto...";
+                const dataUrl = await compressImage(inputFoto.files[0]);
+                const fileName = `lugares/${Date.now()}_${inputFoto.files[0].name}`;
+                const storageRef = ref(storage, fileName);
+                btnGuardarLugar.innerText = "Subiendo foto...";
+                await uploadString(storageRef, dataUrl, 'data_url');
+                fotoUrl = await getDownloadURL(storageRef);
+            }
+
+            btnGuardarLugar.innerText = "Guardando lugar...";
             await addDoc(collection(db, "lugares_comunidad"), {
                 titulo: titulo,
                 descripcion: desc,
                 coords: [center.lat, center.lng],
+                fotoUrl: fotoUrl,
                 fecha: new Date()
             });
             showToast("¡Lugar agregado con éxito!");
             modalLugar.classList.add('vista-oculta');
             document.getElementById('nuevo-lugar-titulo').value = '';
             document.getElementById('nuevo-lugar-desc').value = '';
+            if(inputFoto) inputFoto.value = '';
             btnGuardarLugar.innerText = "Guardar Lugar";
             
             // Añadir el pin de inmediato
+            let popupContent = `<b>${titulo}</b><br>${desc}`;
+            if(fotoUrl) {
+                popupContent += `<br><img src="${fotoUrl}" style="width:100%; max-height:150px; object-fit:cover; margin-top:10px; border-radius:5px;">`;
+            }
             L.marker([center.lat, center.lng]).addTo(map)
-             .bindPopup(`<b>${titulo}</b><br>${desc}`).openPopup();
+             .bindPopup(popupContent).openPopup();
              
         } catch(e) {
             console.error(e);

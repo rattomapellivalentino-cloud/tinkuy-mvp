@@ -80,6 +80,10 @@
                         <input type="text" id="titulo" placeholder="Ej: Reforestación en Concepción">
                         <input type="text" id="lugar" placeholder="Lugar exacto de la salida">
                         <textarea id="descripcion" placeholder="Describe tu experiencia y el impacto ambiental..." style="height: 100px;"></textarea>
+                        <div style="margin: 10px 0;">
+                            <label style="font-size: 13px; color: var(--forest); font-weight: bold;">Sube una foto (Opcional):</label>
+                            <input type="file" id="foto-muro" accept="image/*" style="display: block; margin-top: 5px; font-size: 13px;">
+                        </div>
                         <button id="btn-publicar" class="btn-principal">Publicar en Raíz</button>
                     </div>
 
@@ -239,6 +243,10 @@
             <p style="font-size:14px; margin-bottom:15px; color:#555;">Mueve el mapa a la ubicación exacta antes de guardar.</p>
             <input type="text" id="nuevo-lugar-titulo" placeholder="Nombre del lugar (Ej: Laguna de Paca)">
             <textarea id="nuevo-lugar-desc" placeholder="Descripción breve..." style="height: 80px;"></textarea>
+            <div style="margin: 10px 0;">
+                <label style="font-size: 13px; color: var(--forest); font-weight: bold;">Foto del lugar (Opcional):</label>
+                <input type="file" id="foto-lugar" accept="image/*" style="display: block; margin-top: 5px; font-size: 13px;">
+            </div>
             <div style="display: flex; gap: 10px; margin-top: 20px;">
                 <button class="btn-secundario" id="btn-cerrar-modal-lugar">Cancelar</button>
                 <button class="btn-principal" id="btn-guardar-lugar">Guardar Lugar</button>
