@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, doc, updateDoc, arrayUnion, getDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDneTN4o-E8GaXm5mtAmXGhjcDaaXuU7ug",
@@ -13,6 +14,72 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+let currentUser = null;
+let isUserAdmin = false;
+
+// Configuración Auth
+onAuthStateChanged(auth, async (user) => {
+    const pDesconectado = document.getElementById('perfil-desconectado');
+    const pConectado = document.getElementById('perfil-conectado');
+    const badgeAdmin = document.getElementById('badge-admin');
+    const seccionAdminEvento = document.getElementById('seccion-admin-evento');
+    
+    if (user) {
+        currentUser = user;
+        if(pDesconectado) pDesconectado.classList.add('vista-oculta');
+        if(pConectado) pConectado.classList.remove('vista-oculta');
+        
+        document.getElementById('perfil-nombre').innerText = user.displayName;
+        document.getElementById('perfil-email').innerText = user.email;
+        if(user.photoURL) document.getElementById('perfil-foto').src = user.photoURL;
+        
+        // Verificar si es admin
+        try {
+            const adminDoc = await getDoc(doc(db, "admins", user.uid));
+            if (adminDoc.exists()) {
+                isUserAdmin = true;
+                if(badgeAdmin) badgeAdmin.classList.remove('vista-oculta');
+                if(seccionAdminEvento) seccionAdminEvento.classList.remove('vista-oculta');
+            } else {
+                isUserAdmin = false;
+                if(badgeAdmin) badgeAdmin.classList.add('vista-oculta');
+                if(seccionAdminEvento) seccionAdminEvento.classList.add('vista-oculta');
+            }
+        } catch(e) {
+            console.error("Error verificando admin", e);
+            isUserAdmin = false;
+        }
+    } else {
+        currentUser = null;
+        isUserAdmin = false;
+        if(pDesconectado) pDesconectado.classList.remove('vista-oculta');
+        if(pConectado) pConectado.classList.add('vista-oculta');
+        if(badgeAdmin) badgeAdmin.classList.add('vista-oculta');
+        if(seccionAdminEvento) seccionAdminEvento.classList.add('vista-oculta');
+    }
+});
+
+const btnLoginGoogle = document.getElementById('btn-login-google');
+if(btnLoginGoogle) {
+    btnLoginGoogle.addEventListener('click', async () => {
+        try {
+            await signInWithPopup(auth, provider);
+        } catch(e) {
+            console.error("Error login:", e);
+            if(window.showToast) showToast("Error al iniciar sesión.");
+        }
+    });
+}
+
+const btnLogout = document.getElementById('btn-logout');
+if(btnLogout) {
+    btnLogout.addEventListener('click', () => {
+        signOut(auth);
+    });
+}
 
 const map = L.map('mapa-fondo', { zoomControl: false }).setView([-12.065, -75.204], 10);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 20, attribution: '© OpenStreetMap © CARTO' }).addTo(map);
@@ -508,6 +575,10 @@ if(btnCerrarEvento) {
 
 if(btnGuardarEvento) {
     btnGuardarEvento.addEventListener('click', async () => {
+        if(!isUserAdmin) {
+            if(window.showToast) showToast("No tienes permisos para crear eventos.");
+            return;
+        }
         const tit = document.getElementById('nuevo-evento-titulo').value.trim();
         const desc = document.getElementById('nuevo-evento-desc').value.trim();
         if(!tit || !desc) { showToast("Llena los datos."); return; }
