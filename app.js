@@ -395,38 +395,6 @@ async function cargarLugaresComunidad() {
 }
 cargarLugaresComunidad();
 
-// -----------------------------------------------------
-// LÓGICA DE NAVEGACIÓN ENTRE PESTAÑAS
-// -----------------------------------------------------
-const navButtons = document.querySelectorAll('.nav-btn, .nav-item');
-const vistas = [
-    document.getElementById('inicio-container'),
-    document.getElementById('eventos-container'),
-    document.getElementById('chat-container'),
-    document.getElementById('perfil-container')
-];
-
-navButtons.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        
-        navButtons.forEach(b => b.classList.remove('active'));
-        
-        const targetId = btn.getAttribute('data-target');
-        document.querySelectorAll(`[data-target="${targetId}"]`).forEach(b => b.classList.add('active'));
-        
-        vistas.forEach(v => {
-            if (v) v.classList.add('vista-oculta');
-            if (v) v.classList.remove('vista-activa');
-        });
-        
-        const targetView = document.getElementById(targetId);
-        if (targetView) {
-            targetView.classList.remove('vista-oculta');
-            targetView.classList.add('vista-activa');
-        }
-    });
-});
 
 // -----------------------------------------------------
 // LÓGICA DEL CALENDARIO
