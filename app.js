@@ -43,11 +43,64 @@ window.buscarLugar = async function () {
             map.flyTo([lat, lon], 14);
             L.marker([lat, lon]).addTo(map).bindPopup(`<b>${nombreLugar}</b>`).openPopup();
             document.getElementById('lugar').value = nombreLugar;
+            document.getElementById('sugerencias-busqueda').classList.add('vista-oculta');
         } else {
-            alert("No encontramos ese lugar.");
+            if(window.showToast) window.showToast("No encontramos ese lugar.");
         }
     } catch (error) { console.error("Error buscando:", error); }
 };
+
+let timeoutBusqueda;
+const inputBusqueda = document.getElementById('input-busqueda');
+const sugerenciasContainer = document.getElementById('sugerencias-busqueda');
+
+inputBusqueda.addEventListener('input', () => {
+    clearTimeout(timeoutBusqueda);
+    const query = inputBusqueda.value.trim();
+    if (query.length < 3) {
+        sugerenciasContainer.classList.add('vista-oculta');
+        return;
+    }
+    
+    timeoutBusqueda = setTimeout(async () => {
+        try {
+            const respuesta = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}, Junin, Peru&limit=5`);
+            const datos = await respuesta.json();
+            
+            sugerenciasContainer.innerHTML = '';
+            if (datos.length > 0) {
+                datos.forEach(lugar => {
+                    const item = document.createElement('div');
+                    item.className = 'sugerencia-item';
+                    const nombreCorto = lugar.display_name.split(',')[0];
+                    item.innerText = lugar.display_name;
+                    item.onclick = () => {
+                        inputBusqueda.value = nombreCorto;
+                        sugerenciasContainer.classList.add('vista-oculta');
+                        const lat = parseFloat(lugar.lat); 
+                        const lon = parseFloat(lugar.lon);
+                        map.flyTo([lat, lon], 14);
+                        L.marker([lat, lon]).addTo(map).bindPopup(`<b>${nombreCorto}</b>`).openPopup();
+                        document.getElementById('lugar').value = nombreCorto;
+                    };
+                    sugerenciasContainer.appendChild(item);
+                });
+            } else {
+                sugerenciasContainer.innerHTML = '<div class="sugerencia-item">No hay sugerencias</div>';
+            }
+            sugerenciasContainer.classList.remove('vista-oculta');
+        } catch (e) {
+            console.error("Error cargando sugerencias", e);
+        }
+    }, 500);
+});
+
+// Ocultar sugerencias al hacer clic fuera
+document.addEventListener('click', (e) => {
+    if (sugerenciasContainer && !e.target.closest('.buscador-mapa')) {
+        sugerenciasContainer.classList.add('vista-oculta');
+    }
+});
 
 
 // Muro y Firebase (Se mantiene igual que antes, resumido para no alargar)
@@ -238,3 +291,106 @@ document.querySelectorAll('.sheet-container').forEach(sheet => {
         });
     }
 });
+
+// -----------------------------------------------------
+// LÓGICA DE UI ADICIONAL (Toast, FAB, Modal)
+// -----------------------------------------------------
+
+window.showToast = function(message) {
+    const container = document.getElementById('toast-container');
+    if(!container) return;
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerText = message;
+    container.appendChild(toast);
+    setTimeout(() => {
+        if(toast.parentElement) toast.remove();
+    }, 3000);
+};
+
+// Interceptar clics en botones sin función real (Chat, Amigos, Perfil)
+document.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t.tagName === 'BUTTON' && !t.id && !t.classList.contains('nav-item') && !t.classList.contains('nav-btn') && !t.classList.contains('btn-enviar-comentario') && !t.classList.contains('swiper-button-next') && !t.classList.contains('swiper-button-prev') && !t.closest('.buscador-mapa')) {
+        const text = t.innerText.trim();
+        if (["Añadir", "Chatear", "Subir", "Enviar", "Editar Perfil"].includes(text)) {
+            e.preventDefault();
+            showToast("Función '" + text + "' en desarrollo.");
+        }
+    }
+});
+
+// FAB Agregar Lugar y Modal
+const btnAbrirModal = document.getElementById('btn-abrir-modal-lugar');
+const btnCerrarModal = document.getElementById('btn-cerrar-modal-lugar');
+const modalLugar = document.getElementById('modal-agregar-lugar');
+const btnGuardarLugar = document.getElementById('btn-guardar-lugar');
+
+if (btnAbrirModal) {
+    btnAbrirModal.addEventListener('click', () => {
+        modalLugar.classList.remove('vista-oculta');
+    });
+}
+
+if (btnCerrarModal) {
+    btnCerrarModal.addEventListener('click', () => {
+        modalLugar.classList.add('vista-oculta');
+        document.getElementById('nuevo-lugar-titulo').value = '';
+        document.getElementById('nuevo-lugar-desc').value = '';
+    });
+}
+
+if (btnGuardarLugar) {
+    btnGuardarLugar.addEventListener('click', async () => {
+        const titulo = document.getElementById('nuevo-lugar-titulo').value.trim();
+        const desc = document.getElementById('nuevo-lugar-desc').value.trim();
+        
+        if(!titulo || !desc) {
+            showToast("Por favor, completa el título y la descripción.");
+            return;
+        }
+        
+        btnGuardarLugar.innerText = "Guardando...";
+        const center = map.getCenter();
+        
+        try {
+            await addDoc(collection(db, "lugares_comunidad"), {
+                titulo: titulo,
+                descripcion: desc,
+                coords: [center.lat, center.lng],
+                fecha: new Date()
+            });
+            showToast("¡Lugar agregado con éxito!");
+            modalLugar.classList.add('vista-oculta');
+            document.getElementById('nuevo-lugar-titulo').value = '';
+            document.getElementById('nuevo-lugar-desc').value = '';
+            btnGuardarLugar.innerText = "Guardar Lugar";
+            
+            // Añadir el pin de inmediato
+            L.marker([center.lat, center.lng]).addTo(map)
+             .bindPopup(`<b>${titulo}</b><br>${desc}`).openPopup();
+             
+        } catch(e) {
+            console.error(e);
+            showToast("Error al guardar el lugar.");
+            btnGuardarLugar.innerText = "Guardar Lugar";
+        }
+    });
+}
+
+// Cargar lugares guardados por la comunidad
+async function cargarLugaresComunidad() {
+    try {
+        const consulta = query(collection(db, "lugares_comunidad"));
+        const qs = await getDocs(consulta);
+        qs.forEach((docSnap) => {
+            const data = docSnap.data();
+            if(data.coords) {
+                L.marker(data.coords).addTo(map).bindPopup(`<b>${data.titulo}</b><br>${data.descripcion}`);
+            }
+        });
+    } catch(e) {
+        console.error("Error cargando lugares comunidad", e);
+    }
+}
+cargarLugaresComunidad();

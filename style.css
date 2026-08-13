@@ -102,6 +102,28 @@ input:focus, textarea:focus { border-color: var(--forest); box-shadow: 0 4px 12p
 .nav-item.active { color: var(--forest); }
 
 /* -----------------------------------------------------
+   NUEVOS COMPONENTES (BÚSQUEDA, FAB, MODAL, TOAST)
+------------------------------------------------------ */
+.sugerencias-container { position: absolute; top: 100%; left: 0; width: 100%; background: var(--bg-blur); backdrop-filter: blur(25px); border-radius: 15px; margin-top: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; max-height: 250px; overflow-y: auto; }
+.sugerencia-item { padding: 12px 20px; font-size: 14px; cursor: pointer; border-bottom: 1px solid rgba(6,71,52,0.05); transition: background 0.2s; }
+.sugerencia-item:hover { background: rgba(224, 255, 194, 0.5); }
+.sugerencia-item:last-child { border-bottom: none; }
+
+.fab-agregar-lugar { position: fixed; bottom: 80px; right: 20px; width: 60px; height: 60px; background: var(--forest); color: var(--leaf); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 30px; font-weight: bold; border: none; box-shadow: 0 5px 20px rgba(6,71,52,0.4); cursor: pointer; z-index: 1000; transition: transform 0.2s ease; }
+.fab-agregar-lugar:active { transform: scale(0.9); }
+
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(6, 71, 52, 0.8); backdrop-filter: blur(10px); z-index: 4000; display: flex; justify-content: center; align-items: center; }
+.modal-content { background: #fff; width: 90%; max-width: 400px; padding: 25px; border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.2); }
+.modal-content h2 { margin-top: 0; }
+.btn-secundario { background: transparent; color: var(--forest); border: 2px solid var(--forest); padding: 12px 15px; border-radius: 12px; cursor: pointer; width: 100%; font-weight: 700; font-size: 15px; transition: all 0.2s; }
+.btn-secundario:hover { background: rgba(6, 71, 52, 0.05); }
+
+#toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 5000; display: flex; flex-direction: column; gap: 10px; }
+.toast { background: var(--forest); color: var(--leaf); padding: 12px 20px; border-radius: 100px; font-size: 14px; font-weight: 600; box-shadow: 0 5px 15px rgba(6,71,52,0.3); animation: slideDown 0.3s ease, fadeOut 0.3s ease 2.7s forwards; }
+@keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+/* -----------------------------------------------------
    DISEÑO PARA COMPUTADORA (BARRA LATERAL)
 ------------------------------------------------------ */
 @media (min-width: 768px) {
@@ -138,4 +160,6 @@ input:focus, textarea:focus { border-color: var(--forest); box-shadow: 0 4px 12p
     }
     h1 { font-size: 34px; }
     .rutas-info, .post-card, input, textarea { font-size: 15px; }
+    
+    .fab-agregar-lugar { right: calc(var(--sheet-width) + 30px); bottom: 30px; }
 }

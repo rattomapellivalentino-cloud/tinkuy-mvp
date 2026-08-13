@@ -26,7 +26,13 @@
     <div class="buscador-mapa">
         <input type="text" id="input-busqueda" placeholder="Buscar lugar (Ej: La Merced)...">
         <button onclick="buscarLugar()">Buscar</button>
+        <div id="sugerencias-busqueda" class="sugerencias-container vista-oculta"></div>
     </div>
+
+    <!-- FAB Agregar Lugar -->
+    <button class="fab-agregar-lugar" id="btn-abrir-modal-lugar">
+        <span>+</span>
+    </button>
 
     <!-- VISTAS PRINCIPALES -->
     <main id="main-content">
@@ -171,6 +177,23 @@
         <a href="#" class="nav-item" data-target="chat-container">Chat</a>
         <a href="#" class="nav-item" data-target="perfil-container">Perfil</a>
     </nav>
+
+    <!-- Modal Agregar Lugar -->
+    <div class="modal-overlay vista-oculta" id="modal-agregar-lugar">
+        <div class="modal-content">
+            <h2>Añadir Nuevo Lugar</h2>
+            <p style="font-size:14px; margin-bottom:15px; color:#555;">Mueve el mapa a la ubicación exacta antes de guardar.</p>
+            <input type="text" id="nuevo-lugar-titulo" placeholder="Nombre del lugar (Ej: Laguna de Paca)">
+            <textarea id="nuevo-lugar-desc" placeholder="Descripción breve..." style="height: 80px;"></textarea>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn-secundario" id="btn-cerrar-modal-lugar">Cancelar</button>
+                <button class="btn-principal" id="btn-guardar-lugar">Guardar Lugar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script type="module" src="app.js"></script>
