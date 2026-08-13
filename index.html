@@ -4,16 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Raíz App</title>
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    
-    <!-- Enlace exacto al archivo de estilos -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     
+    <!-- Barra Lateral Exclusiva de PC -->
+    <aside class="sidebar-desktop">
+        <div class="sidebar-logo">Raíz</div>
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-btn active" data-target="inicio-container">Mapa y Muro</a>
+            <a href="#" class="nav-btn" data-target="chat-container">Chat y Amigos</a>
+            <a href="#" class="nav-btn" data-target="perfil-container">Mi Perfil</a>
+        </nav>
+    </aside>
+
     <div id="mapa-fondo"></div>
 
     <div class="buscador-mapa">
@@ -21,104 +28,143 @@
         <button onclick="buscarLugar()">Buscar</button>
     </div>
 
-    <main id="main-container" class="page-container">
-        <nav class="navbar">
-            <h2>Raíz</h2>
-            <button class="menu-btn" id="btn-menu">☰</button>
-        </nav>
-        <div class="mobile-menu" id="menu-desplegable">
-            <a href="#">Inicio</a>
-            <a href="#muro-publicaciones">Comunidad</a>
-            <a href="#info-rutas">Rutas Oficiales</a>
+    <!-- VISTAS PRINCIPALES -->
+    <main id="main-content">
+        
+        <!-- VISTA 1: MAPA Y MURO -->
+        <div id="inicio-container" class="vista-activa">
+            <div class="sheet-container">
+                <div class="content-wrapper">
+                    <div class="drag-indicator"></div>
+
+                    <h1>Comunidad Raíz</h1>
+                    <p class="subtitle">Descubre y comparte salidas regenerativas.</p>
+
+                    <div class="swiper mySwiper">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide"><img src="imagenes/img1.jpg" alt="Galeria 1"></div>
+                            <div class="swiper-slide"><img src="imagenes/img2.jpg" alt="Galeria 2"></div>
+                            <div class="swiper-slide"><img src="imagenes/img3.jpg" alt="Galeria 3"></div>
+                            <div class="swiper-slide"><img src="imagenes/img4.jpg" alt="Galeria 4"></div>
+                            <div class="swiper-slide"><img src="imagenes/img5.jpg" alt="Galeria 5"></div>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                    </div>
+
+                    <div id="info-rutas" class="rutas-info">
+                        <h2>Puntos de Conservación</h2>
+                        <ul>
+                            <li>El Vivero Amor Nativas en la Provincia de Concepción produce plantas de Quinuales y tiene el objetivo de aprender a propagar especies nativas.</li>
+                            <li>La Ruta Andino Selvatica ofrece trekking por la puna húmeda y los bosques de neblina en La Unión-Huasahuasi.</li>
+                            <li>Ilish Pichacoto es un área con zonas arqueológicas, camping y un camino de reflexión, siendo la primera área de conservación de Junín administrada por la comunidad Campesina de Saño.</li>
+                            <li>La Casa Hospedaje Rumiwasi promueve la agricultura regenerativa y resguarda la cultura de la comunidad en Saño.</li>
+                            <li>El Proyecto de Restauración Vegetal Asociación Villasol-Yauli cuenta con 27 hectáreas de bosques de Quinual para restaurar espacios.</li>
+                            <li>En Ñahuinpuquio se realiza la plantación comunitaria de más de 3000 quinuales al año en medio de agricultura regenerativa y qochas.</li>
+                            <li>Wasi Kamaq es un espacio de innovación ancestral con hornos portátiles y plantas medicinales ubicado en San Jerónimo.</li>
+                        </ul>
+                    </div>
+
+                    <div class="form-container">
+                        <h2>Sube tu actividad</h2>
+                        <input type="text" id="titulo" placeholder="Ej: Reforestación en Concepción">
+                        <input type="text" id="lugar" placeholder="Lugar exacto de la salida">
+                        <textarea id="descripcion" placeholder="Describe tu experiencia y el impacto ambiental..." style="height: 100px;"></textarea>
+                        <button id="btn-publicar" class="btn-principal">Publicar en Raíz</button>
+                    </div>
+
+                    <h2>Muro de Acción</h2>
+                    <div id="muro-publicaciones"></div>
+                </div>
+            </div>
         </div>
 
-        <div class="sheet-container">
-            <div class="content-wrapper">
-                
-                <div class="desktop-menu">
-                    <h2>Raíz</h2>
-                    <div>
-                        <a href="#">Inicio</a>
-                        <a href="#muro-publicaciones">Comunidad</a>
-                        <a href="#info-rutas">Rutas Oficiales</a>
+        <!-- VISTA 2: CHAT Y AMIGOS -->
+        <div id="chat-container" class="vista-oculta">
+            <div class="sheet-container" style="margin-top: 0; min-height: 100vh; border-radius: 0;">
+                <div class="content-wrapper">
+                    <h1>Mis Amigos</h1>
+                    <div class="buscador-amigos">
+                        <input type="text" placeholder="Buscar por nombre o ID..." style="width: 100%; border-radius: 100px; padding: 12px 20px; border: 1px solid #ccc;">
+                        <button class="btn-principal" style="margin-top: 10px; width: auto; border-radius: 100px; padding: 10px 25px;">Añadir</button>
+                    </div>
+
+                    <div class="lista-amigos" style="margin-top: 30px;">
+                        <!-- Amigo de prueba -->
+                        <div class="amigo-card" style="display: flex; align-items: center; justify-content: space-between; background: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div style="width: 50px; height: 50px; background: var(--forest); border-radius: 50%; color: var(--leaf); display: flex; align-items: center; justify-content: center; font-weight: bold;">F</div>
+                                <div>
+                                    <h3 style="margin: 0; font-size: 16px;">Farid</h3>
+                                    <p style="margin: 0; font-size: 12px; color: green;">En línea</p>
+                                </div>
+                            </div>
+                            <button class="btn-principal" style="padding: 8px 15px; font-size: 13px; border-radius: 100px;">Chatear</button>
+                        </div>
+                    </div>
+
+                    <div class="chat-zona" style="margin-top: 40px; background: #fff; border-radius: 20px; height: 400px; display: flex; flex-direction: column; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+                        <div style="background: var(--forest); color: var(--leaf); padding: 15px 20px; border-radius: 20px 20px 0 0; font-weight: bold;">Chat de la Comunidad</div>
+                        <div style="flex: 1; padding: 20px; overflow-y: auto;">
+                            <p style="text-align: center; color: #888; font-size: 13px;">Las herramientas de mensajería e intercambio de imágenes requieren configuración de Base de Datos y Storage.</p>
+                        </div>
+                        <div style="padding: 15px; border-top: 1px solid #eee; display: flex; gap: 10px;">
+                            <button style="background: #eee; border: none; padding: 10px 15px; border-radius: 50px; cursor: pointer;">Subir</button>
+                            <input type="text" placeholder="Escribe un mensaje..." style="flex: 1; margin: 0; border-radius: 50px;">
+                            <button class="btn-principal" style="width: auto; padding: 10px 20px; border-radius: 50px;">Enviar</button>
+                        </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="drag-indicator"></div>
-
-                <h1>Comunidad Raíz</h1>
-                <p class="subtitle">Descubre y comparte salidas regenerativas.</p>
-
-                <div class="swiper mySwiper">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide"><img src="imagenes/img1.jpg" alt="Galeria 1"></div>
-                        <div class="swiper-slide"><img src="imagenes/img2.jpg" alt="Galeria 2"></div>
-                        <div class="swiper-slide"><img src="imagenes/img3.jpg" alt="Galeria 3"></div>
-                        <div class="swiper-slide"><img src="imagenes/img4.jpg" alt="Galeria 4"></div>
-                        <div class="swiper-slide"><img src="imagenes/img5.jpg" alt="Galeria 5"></div>
-                    </div>
-                    <div class="swiper-pagination"></div>
+        <!-- VISTA 3: PERFIL -->
+        <div id="perfil-container" class="vista-oculta">
+            <div class="sheet-container" style="margin-top: 0; min-height: 100vh; border-radius: 0;">
+                <div class="content-wrapper" style="text-align: center; padding-top: 50px;">
+                    <div style="width: 100px; height: 100px; background: var(--forest); border-radius: 50%; color: var(--leaf); display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: bold; margin: 0 auto 20px auto;">V</div>
+                    <h1>Mi Perfil Raíz</h1>
+                    <p class="subtitle">Gestiona tus salidas regenerativas.</p>
+                    <button class="btn-principal" style="max-width: 200px; margin-top: 20px;">Editar Perfil</button>
                 </div>
-
-                <div id="info-rutas" class="rutas-info">
-                    <h2>Puntos de Conservación</h2>
-                    <ul>
-                        <li>El Vivero Amor Nativas en la Provincia de Concepción produce plantas de Quinuales y tiene el objetivo de aprender a propagar especies nativas[cite: 1].</li>
-                        <li>La Ruta Andino Selvatica ofrece trekking por la puna húmeda y los bosques de neblina en La Unión-Huasahuasi[cite: 1].</li>
-                        <li>Ilish Pichacoto es un área con zonas arqueológicas, camping y un camino de reflexión, siendo la primera área de conservación de Junín administrada por la comunidad Campesina de Saño[cite: 1].</li>
-                        <li>La Casa Hospedaje Rumiwasi promueve la agricultura regenerativa y resguarda la cultura de la comunidad en Saño[cite: 1].</li>
-                        <li>El Proyecto de Restauración Vegetal Asociación Villasol-Yauli cuenta con 27 hectáreas de bosques de Quinual para restaurar espacios[cite: 1]. El proyecto surge para combatir la pérdida de salud en la tierra a causa de la minería en La Oroya[cite: 1].</li>
-                        <li>En Ñahuinpuquio se realiza la plantación comunitaria de más de 3000 quinuales al año en medio de agricultura regenerativa y qochas[cite: 1].</li>
-                        <li>Wasi Kamaq es un espacio de innovación ancestral con hornos portátiles y plantas medicinales ubicado en San Jerónimo[cite: 1].</li>
-                    </ul>
-                </div>
-
-                <div class="form-container">
-                    <h2>Sube tu actividad</h2>
-                    <input type="text" id="titulo" placeholder="Ej: Reforestación en Concepción">
-                    <input type="text" id="lugar" placeholder="Lugar exacto de la salida">
-                    <textarea id="descripcion" placeholder="Describe tu experiencia y el impacto ambiental..." style="height: 120px;"></textarea>
-                    <button id="btn-publicar" class="btn-principal">Publicar en Raíz</button>
-                </div>
-
-                <h2>Muro de Acción</h2>
-                <div id="muro-publicaciones"></div>
-                
             </div>
         </div>
     </main>
 
+    <!-- PANEL DE DETALLES DEL LUGAR (El que se trababa) -->
     <div class="detalle-lugar" id="panel-detalle">
-        <div class="drag-indicator" id="cerrar-detalle"></div>
-        <h2 id="detalle-titulo">Nombre del Lugar</h2>
+        <div class="detalle-contenido-superior" style="display: flex; align-items: center; padding-top: 15px; position: sticky; top: 0; z-index: 10; background: var(--bg-blur); backdrop-filter: blur(20px);">
+            <!-- Botón de Volver explícito -->
+            <button id="btn-volver" style="background: rgba(6, 71, 52, 0.1); border: none; color: var(--forest); font-weight: bold; padding: 10px 20px; border-radius: 100px; cursor: pointer;">Volver</button>
+            <h2 id="detalle-titulo" style="margin: 0; flex: 1; text-align: center; padding-right: 40px;">Nombre del Lugar</h2>
+        </div>
+
         <div class="detalle-img-container" id="detalle-img">
             <img src="imagenes/img1.jpg" alt="Lugar">
         </div>
+        
         <div class="detalle-contenido">
-            <p id="detalle-descripcion"></p>
+            <div class="texto-fase-1">
+                <p id="detalle-descripcion" style="font-size: 15px; line-height: 1.6;"></p>
+                <hr style="border: none; border-top: 1px solid rgba(6,71,52,0.1); margin: 30px 0;">
+                
+                <!-- Comentarios del Lugar -->
+                <h3>Experiencias en este lugar</h3>
+                <div id="comentarios-lugar-oficial" style="margin-bottom: 20px;">
+                    <p style="color: #666; font-size: 13px;">Aún no hay comentarios. Cuéntanos tu experiencia.</p>
+                </div>
+                <div class="input-comentario-row">
+                    <input type="text" id="input-comentario-lugar" placeholder="¿Qué te pareció este lugar?">
+                    <button id="btn-comentar-lugar" style="background: var(--forest); color: var(--leaf);">Comentar</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div id="chat-container" class="page-container hidden">
-        <!-- Este es un placeholder para tu futura interfaz de chat -->
-        <div class="chat-placeholder">
-            <h2>Chat</h2>
-            <p>Próximamente: Una nueva forma de conectar con la comunidad Raíz.</p>
-        </div>
-    </div>
-
-    <div id="perfil-container" class="page-container hidden">
-        <!-- Este es un placeholder para tu futura interfaz de perfil -->
-        <div class="chat-placeholder">
-            <h2>Mi Perfil</h2>
-            <p>Próximamente: Gestiona tu perfil y actividades.</p>
-        </div>
-    </div>
-
+    <!-- Navegación inferior (Sólo Celular) -->
     <nav class="bottom-nav">
-        <a href="#" id="nav-inicio" class="nav-item active">Inicio</a>
-        <a href="#" id="nav-chat" class="nav-item">Chat</a>
-        <a href="#" id="nav-perfil" class="nav-item">Mi Perfil</a>
+        <a href="#" class="nav-item active" data-target="inicio-container">Mapa</a>
+        <a href="#" class="nav-item" data-target="chat-container">Chat</a>
+        <a href="#" class="nav-item" data-target="perfil-container">Perfil</a>
     </nav>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
