@@ -175,3 +175,65 @@ navBtns.forEach(btn => {
         });
     });
 });
+
+// -----------------------------------------------------
+// LÓGICA DE REDIMENSIONAMIENTO (DRAG / RESIZE)
+// -----------------------------------------------------
+document.querySelectorAll('.sheet-container').forEach(sheet => {
+    const dragMobile = sheet.querySelector('.drag-indicator');
+    const dragDesktop = sheet.querySelector('.drag-indicator-desktop');
+    
+    if (dragMobile) {
+        let startY, startMarginTop;
+        const onTouchMove = (e) => {
+            const currentY = e.touches ? e.touches[0].clientY : e.clientY;
+            const deltaY = currentY - startY;
+            let newMarginTop = startMarginTop + deltaY;
+            if (newMarginTop < 50) newMarginTop = 50;
+            if (newMarginTop > window.innerHeight - 100) newMarginTop = window.innerHeight - 100;
+            document.documentElement.style.setProperty('--sheet-margin-top', `${newMarginTop}px`);
+        };
+        const onTouchEnd = () => {
+            document.removeEventListener('touchmove', onTouchMove);
+            document.removeEventListener('touchend', onTouchEnd);
+            document.removeEventListener('mousemove', onTouchMove);
+            document.removeEventListener('mouseup', onTouchEnd);
+            sheet.style.transition = ''; // restore CSS transition
+            setTimeout(() => map.invalidateSize(), 300);
+        };
+        const onTouchStart = (e) => {
+            startY = e.touches ? e.touches[0].clientY : e.clientY;
+            startMarginTop = parseInt(window.getComputedStyle(sheet).marginTop) || (window.innerHeight * 0.6);
+            sheet.style.transition = 'none'; // disable transition during drag
+            document.addEventListener('touchmove', onTouchMove, { passive: false });
+            document.addEventListener('touchend', onTouchEnd);
+            document.addEventListener('mousemove', onTouchMove);
+            document.addEventListener('mouseup', onTouchEnd);
+        };
+        dragMobile.addEventListener('touchstart', onTouchStart);
+        dragMobile.addEventListener('mousedown', onTouchStart);
+    }
+
+    if (dragDesktop) {
+        let startX, startWidth;
+        const onMouseMove = (e) => {
+            const currentX = e.clientX;
+            const deltaX = startX - currentX;
+            let newWidth = startWidth + deltaX;
+            if (newWidth < 300) newWidth = 300;
+            if (newWidth > window.innerWidth - 300) newWidth = window.innerWidth - 300;
+            document.documentElement.style.setProperty('--sheet-width', `${newWidth}px`);
+            map.invalidateSize();
+        };
+        const onMouseUp = () => {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        };
+        dragDesktop.addEventListener('mousedown', (e) => {
+            startX = e.clientX;
+            startWidth = sheet.offsetWidth;
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+    }
+});
