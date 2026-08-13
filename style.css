@@ -2,8 +2,8 @@
     --forest: #064734;
     --leaf: #E0FFC2;
     --bg-blur: rgba(255, 255, 255, 0.9);
-    --sheet-margin-top: 60vh;
-    --sheet-width: calc(50vw + 130px);
+    --sheet-margin-top: 75vh;
+    --sheet-width: 400px;
 }
 
 body, html { 
@@ -46,8 +46,8 @@ body, html {
 }
 .content-wrapper { max-width: 600px; margin: 0 auto; width: 100%; }
 
-.drag-indicator { width: 40px; height: 5px; background: rgba(6, 71, 52, 0.2); border-radius: 10px; margin: -15px auto 20px auto; cursor: grab; }
-.drag-indicator:active { cursor: grabbing; }
+.drag-indicator { width: 38px; height: 5px; background: #c7c7cc; border-radius: 3px; margin: -15px auto 25px auto; cursor: grab; }
+.drag-indicator:active { cursor: grabbing; background: #aeb0b2; }
 .drag-indicator-desktop { display: none; }
 
 /* Tipografía reducida en celular */
@@ -128,7 +128,13 @@ input:focus, textarea:focus { border-color: var(--forest); box-shadow: 0 4px 12p
     .detalle-lugar { width: var(--sheet-width); left: auto; right: 0; border-radius: 0; box-shadow: -15px 0 40px rgba(0,0,0,0.1); }
     .drag-indicator { display: none; }
     .drag-indicator-desktop {
-        display: block; position: absolute; left: 0; top: 0; bottom: 0; width: 10px; cursor: ew-resize; z-index: 100;
+        display: block; position: absolute; left: 0; top: 0; bottom: 0; width: 8px; cursor: ew-resize; z-index: 100; background: transparent;
+    }
+    .drag-indicator-desktop::after {
+        content: ''; position: absolute; left: 2px; top: 50%; transform: translateY(-50%); width: 4px; height: 40px; background: #c7c7cc; border-radius: 4px; transition: background 0.2s;
+    }
+    .drag-indicator-desktop:hover::after, .drag-indicator-desktop:active::after {
+        background: #aeb0b2;
     }
     h1 { font-size: 34px; }
     .rutas-info, .post-card, input, textarea { font-size: 15px; }

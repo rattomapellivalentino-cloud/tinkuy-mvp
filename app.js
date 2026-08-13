@@ -31,7 +31,7 @@ puntosOficiales.forEach(punto => {
     L.marker(punto.coords).addTo(map).on('click', () => { abrirDetalle(punto); });
 });
 
-window.buscarLugar = async function() {
+window.buscarLugar = async function () {
     const input = document.getElementById('input-busqueda').value;
     if (!input) return;
     try {
@@ -48,6 +48,7 @@ window.buscarLugar = async function() {
         }
     } catch (error) { console.error("Error buscando:", error); }
 };
+
 
 // Muro y Firebase (Se mantiene igual que antes, resumido para no alargar)
 const botonPublicar = document.getElementById('btn-publicar');
@@ -92,7 +93,7 @@ async function cargarPublicaciones() {
 contenedorMuro.addEventListener('click', async (e) => {
     if (e.target.classList.contains('btn-enviar-comentario')) {
         const boton = e.target; const idDocumento = boton.dataset.docid; const input = boton.previousElementSibling; const texto = input.value;
-        if(texto.trim() === "") return;
+        if (texto.trim() === "") return;
         boton.disabled = true; boton.innerText = "...";
         try {
             await updateDoc(doc(db, "publicaciones", idDocumento), { comentarios: arrayUnion(texto) });
@@ -117,10 +118,10 @@ function abrirDetalle(data) {
     document.getElementById('detalle-descripcion').textContent = data.description;
     document.getElementById('detalle-img').querySelector('img').src = data.image;
     lugarActualId = data.id_lugar;
-    
+
     panelDetalle.scrollTop = 0;
     panelDetalle.classList.add('activo');
-    
+
     // Agregamos el estado al historial para el botón "Atrás" del mouse/celular
     history.pushState({ panelAbierto: true }, "");
 }
@@ -139,8 +140,8 @@ document.getElementById('btn-volver').addEventListener('click', () => {
 document.getElementById('btn-comentar-lugar').addEventListener('click', () => {
     const input = document.getElementById('input-comentario-lugar');
     const caja = document.getElementById('comentarios-lugar-oficial');
-    if(input.value.trim() !== "") {
-        if(caja.querySelector('p')) caja.innerHTML = ""; // Quitar mensaje "No hay comentarios"
+    if (input.value.trim() !== "") {
+        if (caja.querySelector('p')) caja.innerHTML = ""; // Quitar mensaje "No hay comentarios"
         caja.innerHTML += `<div class="comentario-box">${input.value}</div>`;
         input.value = "";
     }
@@ -156,7 +157,7 @@ const vistas = document.querySelectorAll('#main-content > div');
 navBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
         e.preventDefault();
-        
+
         // Actualizar colores de botones (Limpiar y asignar active)
         navBtns.forEach(b => b.classList.remove('active'));
         // Si clickeo en celular, activo ese. Si en PC, activo ese.
@@ -165,7 +166,7 @@ navBtns.forEach(btn => {
 
         // Mostrar la vista correcta
         vistas.forEach(vista => {
-            if(vista.id === targetId) {
+            if (vista.id === targetId) {
                 vista.classList.remove('vista-oculta');
                 vista.classList.add('vista-activa');
             } else {
@@ -182,7 +183,7 @@ navBtns.forEach(btn => {
 document.querySelectorAll('.sheet-container').forEach(sheet => {
     const dragMobile = sheet.querySelector('.drag-indicator');
     const dragDesktop = sheet.querySelector('.drag-indicator-desktop');
-    
+
     if (dragMobile) {
         let startY, startMarginTop;
         const onTouchMove = (e) => {
