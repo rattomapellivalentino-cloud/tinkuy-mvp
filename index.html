@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,7 +19,8 @@
         <div class="sidebar-logo">Raíz</div>
         <nav class="sidebar-nav">
             <a href="#" class="nav-btn active" data-target="inicio-container">Mapa y Muro</a>
-            <a href="#" class="nav-btn" data-target="chat-container">Chat y Amigos</a>
+            <a href="#" class="nav-btn" data-target="eventos-container">Eventos</a>
+            <a href="#" class="nav-btn" data-target="chat-container">Social</a>
             <a href="#" class="nav-btn" data-target="perfil-container">Mi Perfil</a>
         </nav>
     </aside>
@@ -85,7 +89,44 @@
             </div>
         </div>
 
-        <!-- VISTA 2: CHAT Y AMIGOS -->
+        <!-- VISTA NUEVA: EVENTOS -->
+        <div id="eventos-container" class="vista-oculta">
+            <div class="sheet-container">
+                <div class="drag-indicator-desktop"></div>
+                <div class="content-wrapper">
+                    <div class="drag-indicator"></div>
+                    <h1>Eventos y Foros</h1>
+                    <p class="subtitle">Coordina salidas y conversa con la comunidad.</p>
+                    
+                    <div class="calendario-section" style="background: #fff; padding: 20px; border-radius: 20px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                        <div class="calendario-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <button id="btn-mes-anterior" style="background:none; border:none; font-size:24px; cursor:pointer; font-weight:bold; color:var(--forest);">&lt;</button>
+                            <h2 id="mes-año-actual" style="margin:0;">Mes Año</h2>
+                            <button id="btn-mes-siguiente" style="background:none; border:none; font-size:24px; cursor:pointer; font-weight:bold; color:var(--forest);">&gt;</button>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: 700; color: rgba(6,71,52,0.5); font-size: 13px; margin-bottom: 10px;">
+                            <div>Dom</div><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div>
+                        </div>
+                        <div class="calendario-grid" id="calendario-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;">
+                            <!-- Generado por JS -->
+                        </div>
+                        <p style="font-size: 13px; color: #666; margin-top:15px; text-align: center;">Haz clic en un día para proponer o ver eventos.</p>
+                    </div>
+
+                    <div class="foro-section">
+                        <h2>Foro de la Comunidad</h2>
+                        <div class="form-container">
+                            <input type="text" id="foro-titulo" placeholder="Ej: Ideas para el fin de semana...">
+                            <textarea id="foro-desc" placeholder="Escribe tu mensaje..." style="height: 80px;"></textarea>
+                            <button id="btn-publicar-foro" class="btn-principal">Crear Tema</button>
+                        </div>
+                        <div id="lista-temas-foro"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 2: CHAT Y SOCIAL -->
         <div id="chat-container" class="vista-oculta">
             <div class="sheet-container">
                 <div class="drag-indicator-desktop"></div>
@@ -174,7 +215,8 @@
     <!-- Navegación inferior (Sólo Celular) -->
     <nav class="bottom-nav">
         <a href="#" class="nav-item active" data-target="inicio-container">Mapa</a>
-        <a href="#" class="nav-item" data-target="chat-container">Chat</a>
+        <a href="#" class="nav-item" data-target="eventos-container">Eventos</a>
+        <a href="#" class="nav-item" data-target="chat-container">Social</a>
         <a href="#" class="nav-item" data-target="perfil-container">Perfil</a>
     </nav>
 
@@ -188,6 +230,27 @@
             <div style="display: flex; gap: 10px; margin-top: 20px;">
                 <button class="btn-secundario" id="btn-cerrar-modal-lugar">Cancelar</button>
                 <button class="btn-principal" id="btn-guardar-lugar">Guardar Lugar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Agregar Evento -->
+    <div class="modal-overlay vista-oculta" id="modal-agregar-evento">
+        <div class="modal-content">
+            <h2>Eventos del Día</h2>
+            <p style="font-size:14px; margin-bottom:15px; color:#555; font-weight:600;" id="evento-fecha-seleccionada"></p>
+            
+            <div id="lista-eventos-dia" style="max-height: 150px; overflow-y: auto; margin-bottom: 20px;">
+                <p style="font-size: 13px; color: #888;">No hay eventos aún.</p>
+            </div>
+            
+            <hr style="border: none; border-top: 1px solid rgba(6,71,52,0.1); margin: 20px 0;">
+            <h3 style="margin-top:0; font-size: 16px;">Añadir Nuevo</h3>
+            <input type="text" id="nuevo-evento-titulo" placeholder="Título del evento">
+            <textarea id="nuevo-evento-desc" placeholder="Detalles de la salida..." style="height: 60px;"></textarea>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn-secundario" id="btn-cerrar-modal-evento">Cerrar</button>
+                <button class="btn-principal" id="btn-guardar-evento">Guardar</button>
             </div>
         </div>
     </div>

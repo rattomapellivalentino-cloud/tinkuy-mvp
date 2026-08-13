@@ -394,3 +394,225 @@ async function cargarLugaresComunidad() {
     }
 }
 cargarLugaresComunidad();
+
+// -----------------------------------------------------
+// LÓGICA DE NAVEGACIÓN ENTRE PESTAÑAS
+// -----------------------------------------------------
+const navButtons = document.querySelectorAll('.nav-btn, .nav-item');
+const vistas = [
+    document.getElementById('inicio-container'),
+    document.getElementById('eventos-container'),
+    document.getElementById('chat-container'),
+    document.getElementById('perfil-container')
+];
+
+navButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        navButtons.forEach(b => b.classList.remove('active'));
+        
+        const targetId = btn.getAttribute('data-target');
+        document.querySelectorAll(`[data-target="${targetId}"]`).forEach(b => b.classList.add('active'));
+        
+        vistas.forEach(v => {
+            if (v) v.classList.add('vista-oculta');
+            if (v) v.classList.remove('vista-activa');
+        });
+        
+        const targetView = document.getElementById(targetId);
+        if (targetView) {
+            targetView.classList.remove('vista-oculta');
+            targetView.classList.add('vista-activa');
+        }
+    });
+});
+
+// -----------------------------------------------------
+// LÓGICA DEL CALENDARIO
+// -----------------------------------------------------
+const mesAñoActual = document.getElementById('mes-año-actual');
+const calendarioGrid = document.getElementById('calendario-grid');
+let currentDate = new Date(); 
+let eventosGuardados = {}; 
+
+async function cargarEventosMes() {
+    try {
+        const qs = await getDocs(query(collection(db, "eventos_comunidad")));
+        eventosGuardados = {};
+        qs.forEach(docSnap => {
+            const data = docSnap.data();
+            if(data.fecha_str) {
+                if(!eventosGuardados[data.fecha_str]) eventosGuardados[data.fecha_str] = [];
+                eventosGuardados[data.fecha_str].push(data);
+            }
+        });
+        renderCalendario();
+    } catch(e) {
+        console.error("Error cargando eventos", e);
+    }
+}
+
+function renderCalendario() {
+    if (!calendarioGrid) return;
+    calendarioGrid.innerHTML = '';
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    mesAñoActual.innerText = `${nombresMeses[month]} ${year}`;
+    
+    const primerDiaMes = new Date(year, month, 1).getDay();
+    const diasEnMes = new Date(year, month + 1, 0).getDate();
+    
+    for (let i = 0; i < primerDiaMes; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'dia-calendario vacio';
+        calendarioGrid.appendChild(cell);
+    }
+    
+    for (let day = 1; day <= diasEnMes; day++) {
+        const cell = document.createElement('div');
+        cell.className = 'dia-calendario';
+        cell.innerText = day;
+        
+        const fechaStr = `${year}-${String(month+1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        
+        if (eventosGuardados[fechaStr] && eventosGuardados[fechaStr].length > 0) {
+            cell.classList.add('tiene-evento');
+        }
+        
+        cell.addEventListener('click', () => abrirModalEvento(fechaStr));
+        calendarioGrid.appendChild(cell);
+    }
+}
+
+const btnMesAnt = document.getElementById('btn-mes-anterior');
+const btnMesSig = document.getElementById('btn-mes-siguiente');
+
+if(btnMesAnt) {
+    btnMesAnt.addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderCalendario();
+    });
+}
+if(btnMesSig) {
+    btnMesSig.addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderCalendario();
+    });
+}
+
+// -----------------------------------------------------
+// MODAL DE EVENTOS Y GUARDADO
+// -----------------------------------------------------
+const modalEvento = document.getElementById('modal-agregar-evento');
+const btnCerrarEvento = document.getElementById('btn-cerrar-modal-evento');
+const btnGuardarEvento = document.getElementById('btn-guardar-evento');
+let fechaSeleccionadaParaEvento = "";
+
+function abrirModalEvento(fechaStr) {
+    fechaSeleccionadaParaEvento = fechaStr;
+    document.getElementById('evento-fecha-seleccionada').innerText = "Fecha: " + fechaStr;
+    
+    const listaEventos = document.getElementById('lista-eventos-dia');
+    listaEventos.innerHTML = "";
+    
+    if (eventosGuardados[fechaStr] && eventosGuardados[fechaStr].length > 0) {
+        eventosGuardados[fechaStr].forEach(ev => {
+            listaEventos.innerHTML += `<div style="background: rgba(224, 255, 194, 0.4); padding: 10px; border-radius: 8px; margin-bottom: 8px;">
+                <strong>${ev.titulo}</strong>
+                <p style="margin: 5px 0 0 0; font-size: 13px;">${ev.descripcion}</p>
+            </div>`;
+        });
+    } else {
+        listaEventos.innerHTML = '<p style="font-size: 13px; color: #888;">No hay eventos aún.</p>';
+    }
+    
+    modalEvento.classList.remove('vista-oculta');
+}
+
+if(btnCerrarEvento) {
+    btnCerrarEvento.addEventListener('click', () => {
+        modalEvento.classList.add('vista-oculta');
+    });
+}
+
+if(btnGuardarEvento) {
+    btnGuardarEvento.addEventListener('click', async () => {
+        const tit = document.getElementById('nuevo-evento-titulo').value.trim();
+        const desc = document.getElementById('nuevo-evento-desc').value.trim();
+        if(!tit || !desc) { showToast("Llena los datos."); return; }
+        
+        btnGuardarEvento.innerText = "Guardando...";
+        try {
+            await addDoc(collection(db, "eventos_comunidad"), {
+                fecha_str: fechaSeleccionadaParaEvento,
+                titulo: tit,
+                descripcion: desc,
+                timestamp: new Date()
+            });
+            showToast("Evento creado.");
+            document.getElementById('nuevo-evento-titulo').value = '';
+            document.getElementById('nuevo-evento-desc').value = '';
+            btnGuardarEvento.innerText = "Guardar";
+            modalEvento.classList.add('vista-oculta');
+            cargarEventosMes();
+        } catch(e) {
+            console.error(e); showToast("Error al guardar."); btnGuardarEvento.innerText = "Guardar";
+        }
+    });
+}
+
+// -----------------------------------------------------
+// LÓGICA DEL FORO
+// -----------------------------------------------------
+const btnPublicarForo = document.getElementById('btn-publicar-foro');
+const listaForo = document.getElementById('lista-temas-foro');
+
+async function cargarForo() {
+    try {
+        const qs = await getDocs(query(collection(db, "foro_comunidad")));
+        if(qs.empty) {
+            if(listaForo) listaForo.innerHTML = '<p>No hay temas aún. Sé el primero.</p>';
+            return;
+        }
+        let html = '';
+        qs.forEach(docSnap => {
+            const data = docSnap.data();
+            html += `<div class="post-card">
+                <h3>${data.titulo}</h3>
+                <p>${data.descripcion}</p>
+                <div style="font-size: 11px; color: #888; margin-top:10px;">Comunidad Raíz</div>
+            </div>`;
+        });
+        if(listaForo) listaForo.innerHTML = html;
+    } catch (e) { console.error("Error cargando foro", e); }
+}
+
+if(btnPublicarForo) {
+    btnPublicarForo.addEventListener('click', async () => {
+        const tit = document.getElementById('foro-titulo').value.trim();
+        const desc = document.getElementById('foro-desc').value.trim();
+        if(!tit || !desc) { showToast("Llena los datos."); return; }
+        
+        btnPublicarForo.innerText = "Creando...";
+        try {
+            await addDoc(collection(db, "foro_comunidad"), {
+                titulo: tit,
+                descripcion: desc,
+                timestamp: new Date()
+            });
+            showToast("Tema creado.");
+            document.getElementById('foro-titulo').value = '';
+            document.getElementById('foro-desc').value = '';
+            btnPublicarForo.innerText = "Crear Tema";
+            cargarForo();
+        } catch(e) {
+            console.error(e); showToast("Error."); btnPublicarForo.innerText = "Crear Tema";
+        }
+    });
+}
+
+cargarEventosMes();
+cargarForo();

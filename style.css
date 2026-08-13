@@ -7,7 +7,7 @@
 }
 
 body, html { 
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
     margin: 0; 
     padding: 0; 
     color: var(--forest); 
@@ -98,7 +98,7 @@ input:focus, textarea:focus { border-color: var(--forest); box-shadow: 0 4px 12p
 .bottom-nav {
     position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0 20px 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 2000; border-top: 1px solid rgba(6,71,52,0.1);
 }
-.nav-item { text-decoration: none; color: rgba(6, 71, 52, 0.4); font-weight: 700; font-size: 12px; transition: all 0.2s ease; text-align: center; width: 33%; }
+.nav-item { text-decoration: none; color: rgba(6, 71, 52, 0.4); font-weight: 700; font-size: 12px; transition: all 0.2s ease; text-align: center; width: 25%; }
 .nav-item.active { color: var(--forest); }
 
 /* -----------------------------------------------------
@@ -122,6 +122,13 @@ input:focus, textarea:focus { border-color: var(--forest); box-shadow: 0 4px 12p
 .toast { background: var(--forest); color: var(--leaf); padding: 12px 20px; border-radius: 100px; font-size: 14px; font-weight: 600; box-shadow: 0 5px 15px rgba(6,71,52,0.3); animation: slideDown 0.3s ease, fadeOut 0.3s ease 2.7s forwards; }
 @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+/* Calendario */
+.dia-calendario { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 10px; cursor: pointer; transition: all 0.2s ease; font-size: 15px; position: relative; color: #444; }
+.dia-calendario:hover { background: rgba(224, 255, 194, 0.4); }
+.dia-calendario.tiene-evento { font-weight: 800; color: var(--forest); background: rgba(224, 255, 194, 0.7); }
+.dia-calendario.tiene-evento::after { content: ''; position: absolute; bottom: 5px; width: 5px; height: 5px; background: var(--forest); border-radius: 50%; }
+.dia-calendario.vacio { pointer-events: none; }
 
 /* -----------------------------------------------------
    DISEÑO PARA COMPUTADORA (BARRA LATERAL)
