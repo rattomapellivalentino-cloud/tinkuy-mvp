@@ -182,12 +182,17 @@ input:focus, textarea:focus { border-color: var(--forest); box-shadow: 0 4px 12p
     .rutas-info, .post-card, input, textarea { font-size: 15px; }
     
     .fab-agregar-lugar { right: calc(var(--sheet-width) + 30px); bottom: 30px; }
+
+    /* Ajuste para Social en Desktop */
+    .social-bg { left: 260px; width: calc(100vw - 260px); }
+    .chat-sheet-panel { left: 260px; width: calc(100vw - 260px); }
+    .social-feed-content, .quick-post-container { max-width: 600px; margin: 0 auto; }
 }
 
 /* -----------------------------------------------------
    RAÍZ SOCIAL Y CHATS (MOCKUPS OSCUROS)
 ------------------------------------------------------ */
-.social-bg { background-color: var(--forest) !important; color: var(--leaf); height: 100vh; overflow-y: auto; overflow-x: hidden; position: relative; }
+.social-bg { background-color: var(--forest) !important; color: var(--leaf); height: 100vh; overflow-y: auto; overflow-x: hidden; position: absolute; top: 0; left: 0; width: 100%; z-index: 5; }
 .social-view { padding-bottom: 90px; }
 .social-topbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; position: sticky; top: 0; background: rgba(6, 71, 52, 0.9); backdrop-filter: blur(10px); z-index: 10; border-bottom: 1px solid rgba(224, 255, 194, 0.1); }
 .social-title { font-size: 22px; font-weight: 800; color: var(--leaf); margin: 0; }
