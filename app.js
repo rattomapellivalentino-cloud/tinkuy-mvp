@@ -38,6 +38,19 @@ onAuthStateChanged(auth, async (user) => {
         document.getElementById('perfil-email').innerText = user.email;
         if(user.photoURL) document.getElementById('perfil-foto').src = user.photoURL;
         
+        // Guardar en usuarios
+        try {
+            await setDoc(doc(db, "usuarios", user.uid), {
+                nombre: user.displayName,
+                email: user.email,
+                foto: user.photoURL || ""
+            }, { merge: true });
+        } catch(e) { console.error("Error guardando usuario:", e); }
+
+        // Cargar chats
+        if(typeof cargarContactos === 'function') cargarContactos();
+        if(typeof cargarChatsRecientes === 'function') cargarChatsRecientes();
+        
         // Verificar si es admin (por correo)
         try {
             if(user.email) {
@@ -206,8 +219,40 @@ document.addEventListener('click', (e) => {
     if (sugerenciasContainer && !e.target.closest('.buscador-mapa')) {
         sugerenciasContainer.classList.add('vista-oculta');
     }
-});
+// Lógica del modal Nueva Publicación (Social)
+const modalNuevaPublicacion = document.getElementById('modal-nueva-publicacion');
+const btnNuevaPublicacion = document.getElementById('btn-nueva-publicacion');
+const btnCerrarModalPublicacion = document.getElementById('btn-cerrar-modal-publicacion');
 
+if (btnNuevaPublicacion) {
+    btnNuevaPublicacion.addEventListener('click', () => {
+        modalNuevaPublicacion.classList.remove('vista-oculta');
+    });
+}
+if (btnCerrarModalPublicacion) {
+    btnCerrarModalPublicacion.addEventListener('click', () => {
+        modalNuevaPublicacion.classList.add('vista-oculta');
+    });
+}
+
+// Lógica para paneles del Social (Bottom Sheets / Laterales)
+const btnOpenChats = document.getElementById('btn-open-chats');
+const panelChats = document.getElementById('social-chats-panel');
+const btnCloseChats = document.getElementById('btn-close-chats');
+
+if (btnOpenChats && panelChats) {
+    btnOpenChats.addEventListener('click', () => panelChats.classList.add('activo'));
+    btnCloseChats.addEventListener('click', () => panelChats.classList.remove('activo'));
+}
+
+const btnCloseChatActivo = document.getElementById('btn-close-chat-activo');
+const panelChatActivo = document.getElementById('chat-activo-panel');
+
+if (btnCloseChatActivo && panelChatActivo) {
+    btnCloseChatActivo.addEventListener('click', () => {
+        panelChatActivo.style.transform = "translateX(100%)";
+    });
+}
 
 // Muro y Firebase (Se mantiene igual que antes, resumido para no alargar)
 const botonPublicar = document.getElementById('btn-publicar');
@@ -246,37 +291,74 @@ botonPublicar.addEventListener('click', async () => {
         });
         document.getElementById('titulo').value = ""; document.getElementById('lugar').value = ""; document.getElementById('descripcion').value = ""; 
         if(inputFoto) inputFoto.value = "";
-        botonPublicar.innerText = "Publicar en Raíz"; cargarPublicaciones();
+        botonPublicar.innerText = "Publicar en Raíz"; 
+        modalNuevaPublicacion.classList.add('vista-oculta');
+        cargarPublicaciones();
     } catch (error) { console.error(error); alert("Error."); botonPublicar.innerText = "Publicar en Raíz"; }
 });
 
-const contenedorMuro = document.getElementById('muro-publicaciones');
+const contenedorMuro = document.getElementById('social-feed-content');
+
+function formatRelativeTime(date) {
+    if(!date) return "";
+    const d = date.toDate ? date.toDate() : new Date(date);
+    const diff = Date.now() - d.getTime();
+    const mins = Math.floor(diff / 60000);
+    if(mins < 60) return `${mins} min`;
+    const hrs = Math.floor(mins / 60);
+    if(hrs < 24) return `${hrs} h`;
+    return `${Math.floor(hrs / 24)} d`;
+}
+
 async function cargarPublicaciones() {
+    if(!contenedorMuro) return;
     try {
         const consulta = query(collection(db, "publicaciones"));
         const querySnapshot = await getDocs(consulta);
-        if (querySnapshot.empty) { contenedorMuro.innerHTML = "<p>Aún no hay actividades.</p>"; return; }
+        if (querySnapshot.empty) { contenedorMuro.innerHTML = "<p style='text-align:center; color:var(--leaf); margin-top:20px;'>Aún no hay publicaciones.</p>"; return; }
+        
+        // Convert to array to sort by fecha if needed, but since it's just a mockup structure:
+        const posts = [];
+        querySnapshot.forEach((doc) => posts.push({id: doc.id, ...doc.data()}));
+        posts.sort((a,b) => (b.fecha?.toMillis ? b.fecha.toMillis() : 0) - (a.fecha?.toMillis ? a.fecha.toMillis() : 0));
+
         let publicacionesHTML = "";
-        querySnapshot.forEach((documento) => {
-            const data = documento.data(); const docId = documento.id;
-            let comentariosHTML = "";
-            if (data.comentarios && data.comentarios.length > 0) { data.comentarios.forEach(com => { comentariosHTML += `<div class="comentario-box">${com}</div>`; }); }
+        posts.forEach((data) => {
+            let autor = data.autor || "Usuario";
+            let inicial = autor.charAt(0).toUpperCase();
+            let tiempo = formatRelativeTime(data.fecha);
+
             publicacionesHTML += `
-                <div class="post-card">
-                    <h3>${data.titulo}</h3><p>${data.lugar}</p><p>${data.descripcion}</p>
-                    ${data.fotoUrl ? `<img src="${data.fotoUrl}" style="width:100%; max-height:250px; object-fit:cover; border-radius:8px; margin-bottom:10px;">` : ''}
-                    <span class="etiqueta" style="background: ${data.salida_aprobada ? 'var(--leaf)' : '#eee'};"> ${data.salida_aprobada ? 'Verificado' : 'Pendiente'} </span>
-                    <div class="comentarios-seccion">
-                        <div class="comentarios-lista">${comentariosHTML}</div>
-                        <div class="input-comentario-row">
-                            <input type="text" class="input-comentario" placeholder="Añadir comentario...">
-                            <button class="btn-enviar-comentario" data-docid="${docId}">Enviar</button>
+                <div class="post-card-dark">
+                    <div class="post-card-dark-header">
+                        <div class="post-avatar" style="display:flex; align-items:center; justify-content:center; color:var(--forest); font-weight:bold;">${inicial}</div>
+                        <div class="post-meta">
+                            <span class="post-name-time"><span class="post-name">${autor}</span><span class="post-time">${tiempo}</span></span>
                         </div>
+                    </div>
+                    
+                    <div class="post-text-dark">
+                        <strong>${data.titulo}</strong><br>
+                        <span style="font-size: 12px; opacity: 0.8; color: var(--leaf);"><i data-lucide="map-pin" style="width:12px; height:12px; display:inline-block; margin-right:3px; vertical-align:middle;"></i>${data.lugar}</span><br>
+                        ${data.descripcion}
+                    </div>
+
+                    ${data.fotoUrl ? `<img src="${data.fotoUrl}" class="post-img-dark">` : ''}
+                    
+                    <div class="post-actions-dark">
+                        <i data-lucide="heart"></i>
+                        <i data-lucide="message-circle" class="btn-open-comments" data-docid="${data.id}"></i>
+                        <i data-lucide="bookmark"></i>
+                        <i data-lucide="send"></i>
                     </div>
                 </div>`;
         });
         contenedorMuro.innerHTML = publicacionesHTML;
-    } catch (error) { contenedorMuro.innerHTML = "<p>Error de conexión.</p>"; }
+        if(window.lucide) window.lucide.createIcons();
+    } catch (error) { 
+        console.error(error);
+        contenedorMuro.innerHTML = "<p style='text-align:center; color:var(--leaf); margin-top:20px;'>Error de conexión.</p>"; 
+    }
 }
 
 contenedorMuro.addEventListener('click', async (e) => {
@@ -800,3 +882,166 @@ if(btnPublicarForo) {
 
 cargarEventosMes();
 cargarForo();
+
+// =========================================================================
+// LÓGICA DE CHATS 1a1 (FIREBASE)
+// =========================================================================
+
+let chatActivoUnsubscribe = null;
+let currentChatId = null;
+
+// Referencias UI
+const chatsContactosList = document.getElementById('chats-contactos-list');
+const chatsRecientesList = document.getElementById('chats-recientes-list');
+const chatMensajesArea = document.getElementById('chat-mensajes');
+const chatActivoNombre = document.getElementById('chat-activo-nombre');
+const btnEnviarMensaje = document.getElementById('btn-enviar-mensaje');
+const chatInputText = document.getElementById('chat-input-text');
+
+async function cargarContactos() {
+    if (!currentUser || !chatsContactosList) return;
+    try {
+        const q = query(collection(db, "usuarios"));
+        const snapshot = await getDocs(q);
+        let html = "";
+        snapshot.forEach(doc => {
+            if (doc.id === currentUser.uid) return; // No mostrar a uno mismo
+            const data = doc.data();
+            const initial = (data.nombre || "U").charAt(0).toUpperCase();
+            html += `
+            <div class="chat-item-dark" onclick="iniciarChat('${doc.id}', '${data.nombre || 'Usuario'}')">
+                <div class="post-avatar" style="display:flex; align-items:center; justify-content:center; color:var(--forest); font-weight:bold; cursor:pointer;">${initial}</div>
+                <div class="chat-item-info" style="cursor:pointer;">
+                    <div class="chat-item-name">${data.nombre || 'Usuario'}</div>
+                    <div class="chat-item-msg">Toca para chatear</div>
+                </div>
+            </div>`;
+        });
+        if (html === "") html = "<p style='color:var(--leaf); font-size:13px;'>No hay otros usuarios.</p>";
+        chatsContactosList.innerHTML = html;
+    } catch(e) {
+        console.error("Error cargando contactos:", e);
+    }
+}
+
+async function cargarChatsRecientes() {
+    if (!currentUser || !chatsRecientesList) return;
+    try {
+        const q = query(collection(db, "chats"), where("participants", "array-contains", currentUser.uid), orderBy("lastTimestamp", "desc"));
+        // Usar onSnapshot para actualizaciones en tiempo real de recientes
+        onSnapshot(q, (snapshot) => {
+            let html = "";
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                const otherUserId = data.participants.find(id => id !== currentUser.uid);
+                const otherUserName = data.participantNames ? (data.participantNames[otherUserId] || "Usuario") : "Usuario";
+                const initial = otherUserName.charAt(0).toUpperCase();
+                let timeStr = formatRelativeTime(data.lastTimestamp);
+                
+                html += `
+                <div class="chat-item-dark" onclick="iniciarChat('${otherUserId}', '${otherUserName}')">
+                    <div class="post-avatar" style="display:flex; align-items:center; justify-content:center; color:var(--forest); font-weight:bold; cursor:pointer;">${initial}</div>
+                    <div class="chat-item-info" style="cursor:pointer;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <div class="chat-item-name">${otherUserName}</div>
+                            <div class="chat-item-time">${timeStr}</div>
+                        </div>
+                        <div class="chat-item-msg">${data.lastMessage || ''}</div>
+                    </div>
+                </div>`;
+            });
+            if (html === "") html = "<p style='color:var(--leaf); font-size:13px;'>Aún no tienes chats recientes.</p>";
+            chatsRecientesList.innerHTML = html;
+        });
+    } catch(e) {
+        console.error("Error cargando chats recientes:", e);
+    }
+}
+
+window.iniciarChat = async function(otherUserId, otherUserName) {
+    if (!currentUser) { alert("Inicia sesión primero"); return; }
+    
+    // Generar ID de chat consistente
+    const chatId = currentUser.uid < otherUserId ? `${currentUser.uid}_${otherUserId}` : `${otherUserId}_${currentUser.uid}`;
+    currentChatId = chatId;
+    
+    chatActivoNombre.innerText = otherUserName;
+    const panelChatActivo = document.getElementById('chat-activo-panel');
+    if(panelChatActivo) panelChatActivo.style.transform = "translateX(0)";
+    
+    // Asegurar que el documento del chat exista
+    const chatRef = doc(db, "chats", chatId);
+    try {
+        const chatDoc = await getDoc(chatRef);
+        if (!chatDoc.exists()) {
+            await setDoc(chatRef, {
+                participants: [currentUser.uid, otherUserId],
+                participantNames: {
+                    [currentUser.uid]: currentUser.displayName || "Usuario",
+                    [otherUserId]: otherUserName
+                },
+                lastMessage: "",
+                lastTimestamp: new Date()
+            });
+        }
+    } catch(e) { console.error("Error inicializando chat:", e); }
+    
+    // Escuchar mensajes
+    if (chatActivoUnsubscribe) chatActivoUnsubscribe();
+    
+    const mensajesRef = collection(db, `chats/${chatId}/mensajes`);
+    const q = query(mensajesRef, orderBy("timestamp", "asc"));
+    
+    chatActivoUnsubscribe = onSnapshot(q, (snapshot) => {
+        let html = "";
+        snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const isMe = data.senderId === currentUser.uid;
+            
+            html += `
+            <div style="display:flex; justify-content: ${isMe ? 'flex-end' : 'flex-start'}; margin-bottom: 10px;">
+                <div style="background: ${isMe ? 'var(--leaf)' : 'rgba(255,255,255,0.1)'}; 
+                            color: ${isMe ? 'var(--forest)' : 'var(--leaf)'}; 
+                            padding: 10px 15px; border-radius: 20px; max-width: 80%; font-size: 14px;">
+                    ${data.text}
+                </div>
+            </div>`;
+        });
+        chatMensajesArea.innerHTML = html;
+        chatMensajesArea.scrollTop = chatMensajesArea.scrollHeight;
+    });
+};
+
+if (btnEnviarMensaje) {
+    btnEnviarMensaje.addEventListener('click', enviarMensajeActivo);
+    if(chatInputText) {
+        chatInputText.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') enviarMensajeActivo();
+        });
+    }
+}
+
+async function enviarMensajeActivo() {
+    const text = chatInputText.value.trim();
+    if (!text || !currentChatId || !currentUser) return;
+    
+    chatInputText.value = "";
+    
+    try {
+        // Añadir mensaje a subcoleccion
+        await addDoc(collection(db, `chats/${currentChatId}/mensajes`), {
+            senderId: currentUser.uid,
+            text: text,
+            timestamp: new Date()
+        });
+        
+        // Actualizar último mensaje en el doc del chat
+        await updateDoc(doc(db, "chats", currentChatId), {
+            lastMessage: text,
+            lastTimestamp: new Date()
+        });
+    } catch(e) {
+        console.error("Error enviando mensaje:", e);
+        alert("Error enviando mensaje");
+    }
+}

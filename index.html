@@ -74,21 +74,7 @@
                             <li>Wasi Kamaq es un espacio de innovación ancestral con hornos portátiles y plantas medicinales ubicado en San Jerónimo.</li>
                         </ul>
                     </div>
-
-                    <div class="form-container">
-                        <h2>Sube tu actividad</h2>
-                        <input type="text" id="titulo" placeholder="Ej: Reforestación en Concepción">
-                        <input type="text" id="lugar" placeholder="Lugar exacto de la salida">
-                        <textarea id="descripcion" placeholder="Describe tu experiencia y el impacto ambiental..." style="height: 100px;"></textarea>
-                        <div style="margin: 10px 0;">
-                            <label style="font-size: 13px; color: var(--forest); font-weight: bold;">Sube una foto (Opcional):</label>
-                            <input type="file" id="foto-muro" accept="image/*" style="display: block; margin-top: 5px; font-size: 13px;">
-                        </div>
-                        <button id="btn-publicar" class="btn-principal">Publicar en Raíz</button>
                     </div>
-
-                    <h2>Muro de Acción</h2>
-                    <div id="muro-publicaciones"></div>
                 </div>
             </div>
         </div>
@@ -130,41 +116,83 @@
             </div>
         </div>
 
-        <!-- VISTA 2: CHAT Y SOCIAL -->
-        <div id="chat-container" class="vista-oculta">
-            <div class="sheet-container">
-                <div class="drag-indicator-desktop"></div>
-                <div class="content-wrapper">
-                    <div class="drag-indicator"></div>
-                    <h1>Mis Amigos</h1>
-                    <div class="buscador-amigos">
-                        <input type="text" placeholder="Buscar por nombre o ID..." style="width: 100%; border-radius: 100px; padding: 12px 20px; border: 1px solid #ccc;">
-                        <button class="btn-principal" style="margin-top: 10px; width: auto; border-radius: 100px; padding: 10px 25px;">Añadir</button>
-                    </div>
+        <!-- VISTA 2: RAÍZ SOCIAL -->
+        <div id="chat-container" class="vista-oculta social-bg">
+            <!-- Feed Raíz Social -->
+            <div id="social-feed-view" class="social-view active-view">
+                <div class="social-topbar">
+                    <button class="icon-btn"><i data-lucide="menu"></i></button>
+                    <h1 class="social-title">Raíz Social</h1>
+                    <button class="icon-btn" id="btn-open-chats"><i data-lucide="search"></i></button>
+                </div>
+                <div class="social-feed-content" id="social-feed-content">
+                    <!-- Posts generados por JS -->
+                </div>
+                
+                <!-- FAB Agregar Publicación -->
+                <button class="fab-agregar-lugar" id="btn-nueva-publicacion" style="bottom: 90px;">
+                    <i data-lucide="plus" style="color: var(--forest); width: 28px; height: 28px;"></i>
+                </button>
+            </div>
 
-                    <div class="lista-amigos" style="margin-top: 30px;">
-                        <!-- Amigo de prueba -->
-                        <div class="amigo-card" style="display: flex; align-items: center; justify-content: space-between; background: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                            <div style="display: flex; align-items: center; gap: 15px;">
-                                <div style="width: 50px; height: 50px; background: var(--forest); border-radius: 50%; color: var(--leaf); display: flex; align-items: center; justify-content: center; font-weight: bold;">F</div>
-                                <div>
-                                    <h3 style="margin: 0; font-size: 16px;">Farid</h3>
-                                    <p style="margin: 0; font-size: 12px; color: green;">En línea</p>
-                                </div>
-                            </div>
-                            <button class="btn-principal" style="padding: 8px 15px; font-size: 13px; border-radius: 100px;">Chatear</button>
-                        </div>
-                    </div>
+            <!-- Chat List (Bottom Sheet) -->
+            <div id="social-chats-panel" class="chat-sheet-panel">
+                <div class="drag-indicator"></div>
+                <div class="social-topbar">
+                    <button class="icon-btn" id="btn-close-chats"><i data-lucide="chevron-down"></i></button>
+                    <h1 class="social-title">Chat Raíz</h1>
+                    <button class="icon-btn"><i data-lucide="search"></i></button>
+                </div>
+                <div class="chats-content">
+                    <h2 class="social-section-title">Chats Recientes</h2>
+                    <div id="chats-recientes-list"></div>
+                    <h2 class="social-section-title" style="margin-top: 20px;">Contactos</h2>
+                    <div id="chats-contactos-list"></div>
+                </div>
+            </div>
+            
+            <!-- Chat Activo 1a1 (Panel lateral o superpuesto) -->
+            <div id="chat-activo-panel" class="chat-sheet-panel" style="z-index: 3001; transform: translateX(100%);">
+                <div class="social-topbar">
+                    <button class="icon-btn" id="btn-close-chat-activo"><i data-lucide="arrow-left"></i></button>
+                    <h1 class="social-title" id="chat-activo-nombre">Usuario</h1>
+                    <div></div>
+                </div>
+                <div id="chat-mensajes" class="chat-mensajes-area"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input-text" placeholder="Mensaje...">
+                    <button class="icon-btn" id="btn-enviar-mensaje"><i data-lucide="send"></i></button>
+                </div>
+            </div>
 
-                    <div class="chat-zona" style="margin-top: 40px; background: #fff; border-radius: 20px; height: 400px; display: flex; flex-direction: column; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
-                        <div style="background: var(--forest); color: var(--leaf); padding: 15px 20px; border-radius: 20px 20px 0 0; font-weight: bold;">Chat de la Comunidad</div>
-                        <div style="flex: 1; padding: 20px; overflow-y: auto;">
-                            <p style="text-align: center; color: #888; font-size: 13px;">Las herramientas de mensajería e intercambio de imágenes requieren configuración de Base de Datos y Storage.</p>
-                        </div>
-                        <div style="padding: 15px; border-top: 1px solid #eee; display: flex; gap: 10px;">
-                            <button style="background: #eee; border: none; padding: 10px 15px; border-radius: 50px; cursor: pointer;">Subir</button>
-                            <input type="text" placeholder="Escribe un mensaje..." style="flex: 1; margin: 0; border-radius: 50px;">
-                            <button class="btn-principal" style="width: auto; padding: 10px 20px; border-radius: 50px;">Enviar</button>
+            <!-- Perfil SoySopa (Bottom Sheet) -->
+            <div id="social-profile-panel" class="chat-sheet-panel">
+                <div class="drag-indicator"></div>
+                <h1 class="social-title" id="perfil-ext-titulo" style="text-align: center; margin-top: 10px;">Perfil</h1>
+                <div class="perfil-ext-header">
+                    <img src="" id="perfil-ext-img" alt="Avatar">
+                </div>
+                <div class="perfil-ext-body">
+                    <div class="perfil-ext-info">
+                        <span id="perfil-ext-handle">@Usuario</span>
+                        <span id="perfil-ext-fecha" style="font-size: 12px;">Miembro desde 2024</span>
+                    </div>
+                    <div class="perfil-ext-stats">
+                        <div><strong id="perfil-ext-seguidores">0</strong><br>Seguidores</div>
+                        <div><strong id="perfil-ext-siguiendo">0</strong><br>Siguiendo</div>
+                        <button class="btn-agregar-amigo" id="btn-agregar-amigo">
+                            AGREGAR AMIGO <i data-lucide="user-plus" style="width: 16px; height: 16px; margin-left: 5px;"></i>
+                        </button>
+                    </div>
+                    <div class="perfil-ext-notas">
+                        <textarea placeholder="Agrega una nota..." readonly></textarea>
+                        <div class="nota-extra"></div>
+                    </div>
+                    <div class="perfil-ext-logros">
+                        <h3 style="margin:0 0 10px 0; font-size:14px;">Logros</h3>
+                        <div style="display:flex; gap:10px;">
+                            <i data-lucide="award" style="color:#FFD700; width:30px; height:30px;"></i>
+                            <i data-lucide="star" style="color:#FFD700; width:30px; height:30px;"></i>
                         </div>
                     </div>
                 </div>
@@ -239,7 +267,7 @@
             <i data-lucide="calendar"></i>
             <span>Eventos</span>
         </a>
-        <a href="#" class="nav-item" data-target="muro-container">
+        <a href="#" class="nav-item" data-target="chat-container">
             <i data-lucide="users"></i>
             <span>Social</span>
         </a>
@@ -289,6 +317,24 @@
             
             <div style="display: flex; gap: 10px; margin-top: 20px;">
                 <button class="btn-secundario" id="btn-cerrar-modal-evento" style="width: 100%;">Cerrar Ventana</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nueva Publicación (Feed Social) -->
+    <div class="modal-overlay vista-oculta" id="modal-nueva-publicacion">
+        <div class="modal-content">
+            <h2 style="color: var(--forest); margin-top: 0;">Nueva Publicación</h2>
+            <input type="text" id="titulo" placeholder="Ej: Reforestación en Concepción">
+            <input type="text" id="lugar" placeholder="Lugar exacto de la salida">
+            <textarea id="descripcion" placeholder="Describe tu experiencia y el impacto ambiental..." style="height: 100px;"></textarea>
+            <div style="margin: 10px 0;">
+                <label style="font-size: 13px; color: var(--forest); font-weight: bold;">Sube una foto (Opcional):</label>
+                <input type="file" id="foto-muro" accept="image/*" style="display: block; margin-top: 5px; font-size: 13px;">
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button class="btn-secundario" id="btn-cerrar-modal-publicacion">Cancelar</button>
+                <button class="btn-principal" id="btn-publicar">Publicar en Raíz</button>
             </div>
         </div>
     </div>
