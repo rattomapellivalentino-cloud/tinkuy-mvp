@@ -228,12 +228,25 @@
         </div>
     </div>
 
-    <!-- Navegación inferior (Sólo Celular) -->
+    <!-- BARRA DE NAVEGACIÓN INFERIOR (CELULAR) -->
     <nav class="bottom-nav">
-        <a href="#" class="nav-item active" data-target="inicio-container">Mapa</a>
-        <a href="#" class="nav-item" data-target="eventos-container">Eventos</a>
-        <a href="#" class="nav-item" data-target="chat-container">Social</a>
-        <a href="#" class="nav-item" data-target="perfil-container">Perfil</a>
+        <div class="nav-indicator"></div>
+        <a href="#" class="nav-item active" data-target="mapa-container">
+            <i data-lucide="map"></i>
+            <span>Mapa</span>
+        </a>
+        <a href="#" class="nav-item" data-target="eventos-container">
+            <i data-lucide="calendar"></i>
+            <span>Eventos</span>
+        </a>
+        <a href="#" class="nav-item" data-target="muro-container">
+            <i data-lucide="leaf"></i>
+            <span>Raíz</span>
+        </a>
+        <a href="#" class="nav-item" data-target="perfil-container">
+            <i data-lucide="user"></i>
+            <span>Perfil</span>
+        </a>
     </nav>
 
     <!-- Modal Agregar Lugar -->
@@ -283,7 +296,12 @@
     <!-- Toast Notifications -->
     <div id="toast-container"></div>
 
+    <!-- Swiper JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>lucide.createIcons();</script>
+    <!-- Lógica de la App -->
     <script type="module" src="app.js"></script>
 </body>
 </html>

@@ -73,7 +73,15 @@ if(btnLoginGoogle) {
             await signInWithPopup(auth, provider);
         } catch(e) {
             console.error("Error login:", e);
-            if(window.showToast) showToast("Error al iniciar sesión.");
+            if(window.showToast) {
+                if(e.code === 'auth/popup-blocked') {
+                    showToast("Ventana bloqueada. Intenta de nuevo.");
+                } else if(e.code === 'auth/unauthorized-domain') {
+                    showToast("Agrega este link en Firebase Auth > Authorized Domains.");
+                } else {
+                    showToast("Error: " + e.message);
+                }
+            }
         }
     });
 }
@@ -341,7 +349,17 @@ navBtns.forEach(btn => {
         navBtns.forEach(b => b.classList.remove('active'));
         // Si clickeo en celular, activo ese. Si en PC, activo ese.
         const targetId = btn.dataset.target;
-        document.querySelectorAll(`[data-target="${targetId}"]`).forEach(b => b.classList.add('active'));
+        document.querySelectorAll(`[data-target="${targetId}"]`).forEach(b => {
+            b.classList.add('active');
+            if(b.classList.contains('nav-item')) {
+                const navItems = Array.from(document.querySelectorAll('.nav-item'));
+                const index = navItems.indexOf(b);
+                const indicator = document.querySelector('.nav-indicator');
+                if(indicator) {
+                    indicator.style.transform = `translateX(${index * 100}%)`;
+                }
+            }
+        });
 
         // Mostrar la vista correcta
         vistas.forEach(vista => {
