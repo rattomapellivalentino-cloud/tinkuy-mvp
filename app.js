@@ -70,18 +70,16 @@ const btnLoginGoogle = document.getElementById('btn-login-google');
 if(btnLoginGoogle) {
     btnLoginGoogle.addEventListener('click', async () => {
         try {
+            if(window.location.protocol === 'file:') {
+                alert("ERROR: Estás abriendo el archivo localmente (file://). Firebase Auth no funciona sin un servidor web. Usa Live Server en VSCode o súbelo a Vercel.");
+                return;
+            }
             await signInWithPopup(auth, provider);
         } catch(e) {
             console.error("Error login:", e);
-            if(window.showToast) {
-                if(e.code === 'auth/popup-blocked') {
-                    showToast("Ventana bloqueada. Intenta de nuevo.");
-                } else if(e.code === 'auth/unauthorized-domain') {
-                    showToast("Agrega este link en Firebase Auth > Authorized Domains.");
-                } else {
-                    showToast("Error: " + e.message);
-                }
-            }
+            let msg = e.message;
+            if(e.code === 'auth/unauthorized-domain') msg = "Debes agregar el dominio en Firebase Auth > Authorized Domains.";
+            alert("Error al iniciar sesión: " + msg);
         }
     });
 }
@@ -222,6 +220,10 @@ botonPublicar.addEventListener('click', async () => {
         let fotoUrl = "";
         const inputFoto = document.getElementById('foto-muro');
         if(inputFoto && inputFoto.files && inputFoto.files[0]) {
+            if(window.location.protocol === 'file:') {
+                alert("Advertencia: Las imágenes no se subirán localmente (file://). Por favor usa Live Server o Vercel.");
+                return;
+            }
             botonPublicar.innerText = "Procesando foto...";
             const dataUrl = await compressImage(inputFoto.files[0]);
             const fileName = `publicaciones/${Date.now()}_${inputFoto.files[0].name}`;
@@ -295,10 +297,21 @@ cargarPublicaciones();
 const swiper = new Swiper('.mySwiper', { pagination: { el: ".swiper-pagination", dynamicBullets: true }, loop: true });
 
 // -----------------------------------------------------
-// LÓGICA DEL PANEL DE DETALLES Y BOTÓN ATRÁS
+// LÓGICA DEL PANEL DE DETALLES Y BOTÓN ATRÁS (BOTTOM SHEET)
 // -----------------------------------------------------
 const panelDetalle = document.getElementById('panel-detalle');
 let lugarActualId = "";
+let currentSnap = "hidden";
+let startY = 0;
+
+function setSnap(snap) {
+    currentSnap = snap;
+    panelDetalle.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
+    if(snap === "hidden") panelDetalle.style.transform = "translateY(100%)";
+    else if(snap === "peek") panelDetalle.style.transform = "translateY(65%)";
+    else if(snap === "mid") panelDetalle.style.transform = "translateY(30%)";
+    else if(snap === "full") panelDetalle.style.transform = "translateY(0%)";
+}
 
 function abrirDetalle(data) {
     document.getElementById('detalle-titulo').textContent = data.title;
@@ -307,20 +320,52 @@ function abrirDetalle(data) {
     lugarActualId = data.id_lugar;
 
     panelDetalle.scrollTop = 0;
-    panelDetalle.classList.add('activo');
-
-    // Agregamos el estado al historial para el botón "Atrás" del mouse/celular
+    setSnap("peek");
     history.pushState({ panelAbierto: true }, "");
 }
 
-// Escuchamos el evento de retroceso del navegador (Mouse o Celular)
-window.addEventListener('popstate', (e) => {
-    panelDetalle.classList.remove('activo');
+// Swipe gestures for bottom sheet
+panelDetalle.addEventListener('touchstart', (e) => {
+    if(panelDetalle.scrollTop > 0 && currentSnap === "full") return;
+    startY = e.touches[0].clientY;
+    panelDetalle.style.transition = 'none';
+}, {passive: true});
+
+panelDetalle.addEventListener('touchmove', (e) => {
+    if(panelDetalle.scrollTop > 0 && currentSnap === "full") return;
+    const deltaY = e.touches[0].clientY - startY;
+    let baseOffset = 0;
+    if(currentSnap === "peek") baseOffset = 65;
+    else if(currentSnap === "mid") baseOffset = 30;
+    else if(currentSnap === "full") baseOffset = 0;
+    
+    const pxOffset = (baseOffset / 100) * window.innerHeight + deltaY;
+    if(pxOffset < 0) return;
+    panelDetalle.style.transform = `translateY(${pxOffset}px)`;
+}, {passive: false});
+
+panelDetalle.addEventListener('touchend', (e) => {
+    if(panelDetalle.scrollTop > 0 && currentSnap === "full") return;
+    const deltaY = e.changedTouches[0].clientY - startY;
+    
+    if(Math.abs(deltaY) < 30) { setSnap(currentSnap); return; }
+    
+    if(deltaY < 0) { // Swipe UP
+        if(currentSnap === "peek") setSnap("mid");
+        else setSnap("full");
+    } else { // Swipe DOWN
+        if(currentSnap === "full") setSnap("mid");
+        else if(currentSnap === "mid") setSnap("peek");
+        else { setSnap("hidden"); history.back(); }
+    }
 });
 
-// Botón de cerrar explícito en la pantalla
+window.addEventListener('popstate', (e) => {
+    setSnap("hidden");
+});
+
 document.getElementById('btn-volver').addEventListener('click', () => {
-    history.back(); // Esto dispara el popstate de arriba
+    history.back();
 });
 
 // Lógica para enviar comentario en el lugar (Visual por ahora, para conectarlo a DB luego)
@@ -501,6 +546,10 @@ if (btnGuardarLugar) {
             let fotoUrl = "";
             const inputFoto = document.getElementById('foto-lugar');
             if(inputFoto && inputFoto.files && inputFoto.files[0]) {
+                if(window.location.protocol === 'file:') {
+                    alert("Advertencia: Las imágenes no se subirán localmente (file://). Por favor usa Live Server o Vercel.");
+                    return;
+                }
                 btnGuardarLugar.innerText = "Procesando foto...";
                 const dataUrl = await compressImage(inputFoto.files[0]);
                 const fileName = `lugares/${Date.now()}_${inputFoto.files[0].name}`;
