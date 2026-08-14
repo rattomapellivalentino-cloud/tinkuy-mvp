@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, doc, updateDoc, arrayUnion, getDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, doc, updateDoc, arrayUnion, getDoc, setDoc, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-storage.js";
 
@@ -219,6 +219,8 @@ document.addEventListener('click', (e) => {
     if (sugerenciasContainer && !e.target.closest('.buscador-mapa')) {
         sugerenciasContainer.classList.add('vista-oculta');
     }
+});
+
 // Lógica del modal Nueva Publicación (Social)
 const modalNuevaPublicacion = document.getElementById('modal-nueva-publicacion');
 const btnNuevaPublicacion = document.getElementById('btn-nueva-publicacion');
