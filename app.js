@@ -231,6 +231,12 @@ if (btnNuevaPublicacion) {
         modalNuevaPublicacion.classList.remove('vista-oculta');
     });
 }
+const btnQuickPost = document.getElementById('btn-quick-post');
+if (btnQuickPost) {
+    btnQuickPost.addEventListener('click', () => {
+        modalNuevaPublicacion.classList.remove('vista-oculta');
+    });
+}
 if (btnCerrarModalPublicacion) {
     btnCerrarModalPublicacion.addEventListener('click', () => {
         modalNuevaPublicacion.classList.add('vista-oculta');
@@ -241,10 +247,14 @@ if (btnCerrarModalPublicacion) {
 const btnOpenChats = document.getElementById('btn-open-chats');
 const panelChats = document.getElementById('social-chats-panel');
 const btnCloseChats = document.getElementById('btn-close-chats');
+const btnAddFriend = document.getElementById('btn-add-friend');
 
 if (btnOpenChats && panelChats) {
     btnOpenChats.addEventListener('click', () => panelChats.classList.add('activo'));
     btnCloseChats.addEventListener('click', () => panelChats.classList.remove('activo'));
+}
+if (btnAddFriend && panelChats) {
+    btnAddFriend.addEventListener('click', () => panelChats.classList.add('activo'));
 }
 
 const btnCloseChatActivo = document.getElementById('btn-close-chat-activo');

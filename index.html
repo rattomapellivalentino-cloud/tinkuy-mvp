@@ -121,16 +121,27 @@
             <!-- Feed Raíz Social -->
             <div id="social-feed-view" class="social-view active-view">
                 <div class="social-topbar">
-                    <button class="icon-btn"><i data-lucide="menu"></i></button>
-                    <h1 class="social-title">Raíz Social</h1>
-                    <button class="icon-btn" id="btn-open-chats"><i data-lucide="search"></i></button>
+                    <h1 class="social-title">Social</h1>
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <button class="icon-btn" id="btn-add-friend" title="Añadir amigos"><i data-lucide="user-plus"></i></button>
+                        <button class="icon-btn" id="btn-open-chats" title="Mensajes"><i data-lucide="message-circle"></i></button>
+                        <button class="icon-btn" title="Menú"><i data-lucide="menu"></i></button>
+                    </div>
                 </div>
+
+                <!-- Input Rápido para Publicar -->
+                <div class="quick-post-container" id="btn-quick-post" style="display:flex; align-items:center; gap: 15px; padding: 15px 20px; border-bottom: 1px solid rgba(224,255,194,0.1); cursor: pointer;">
+                    <div class="post-avatar" style="display:flex; align-items:center; justify-content:center; color:var(--forest); font-weight:bold; width: 45px; height: 45px; font-size: 18px;">U</div>
+                    <div style="flex: 1; border-radius: 30px; border: 1px solid rgba(224,255,194,0.2); background: rgba(0,0,0,0.2); color: var(--leaf); padding: 12px 20px; font-size: 15px;">¿Qué vas a compartir hoy?</div>
+                    <i data-lucide="image" style="color: var(--leaf); opacity: 0.8;"></i>
+                </div>
+
                 <div class="social-feed-content" id="social-feed-content">
                     <!-- Posts generados por JS -->
                 </div>
                 
-                <!-- FAB Agregar Publicación -->
-                <button class="fab-agregar-lugar" id="btn-nueva-publicacion" style="bottom: 90px;">
+                <!-- FAB Agregar Publicación (Opcional, pero lo dejamos oculto o lo cambiamos) -->
+                <button class="fab-agregar-lugar vista-oculta" id="btn-nueva-publicacion" style="bottom: 90px;">
                     <i data-lucide="plus" style="color: var(--forest); width: 28px; height: 28px;"></i>
                 </button>
             </div>
