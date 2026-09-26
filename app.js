@@ -14,25 +14,38 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- PANTALLA DE BIENVENIDA ---
+// --- 1. PANTALLA DE BIENVENIDA ---
 document.getElementById('btn-explorar').addEventListener('click', () => {
-    document.getElementById('pantalla-bienvenida').style.display = 'none';
+    const pantalla = document.getElementById('pantalla-bienvenida');
+    pantalla.style.opacity = '0';
+    pantalla.style.transition = 'opacity 0.5s ease';
+    setTimeout(() => { pantalla.classList.replace('vista-activa', 'vista-oculta'); }, 500);
 });
 
-// --- INICIALIZACIÓN DEL MAPA ---
-const map = L.map('mapa-fondo', { zoomControl: false }).setView([-12.065, -75.204], 10);
+// --- 2. INICIALIZACIÓN DEL MAPA ---
+const map = L.map('mapa-fondo', { zoomControl: false }).setView([-11.8, -75.3], 9);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     maxZoom: 20, attribution: '© OpenStreetMap © CARTO'
 }).addTo(map);
-setTimeout(() => { map.invalidateSize(); }, 500);
 
+setTimeout(() => { map.invalidateSize(); }, 800);
+
+// Pines Oficiales Raíz
 const puntosOficiales = [
-    { coords: [-11.916, -75.316], title: "Vivero Amor Nativas", description: "Ubicado en Concepción, produce plantas de Quinuales.", image: "imagenes/img1.jpg" },
-    { coords: [-11.420, -75.690], title: "Ruta Andina", description: "Ruta de trekking por la puna húmeda.", image: "imagenes/img2.jpg" }
+    { coords: [-11.916, -75.316], title: "Vivero Amor Nativas", description: "Ubicado en Concepción, produce plantas de Quinuales y tiene el objetivo de propagar especies nativas para proyectos de reforestación en todo Junín.", image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800" },
+    { coords: [-11.420, -75.690], title: "Ruta Andino Selvatica", description: "Espectacular ruta de trekking que atraviesa la puna húmeda y los densos bosques de neblina en la zona de La Unión-Huasahuasi.", image: "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=800" },
+    { coords: [-11.950, -75.250], title: "Ilish Pichacoto & Rumiwasi", description: "En Saño, Huancayo, esta es la primera área de conservación de Junín. Incluye zonas arqueológicas, áreas de camping y promueve la agricultura regenerativa.", image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800" }
 ];
 
 puntosOficiales.forEach(punto => {
-    L.marker(punto.coords).addTo(map).on('click', () => {
+    const customIcon = L.divIcon({
+        className: 'custom-pin',
+        html: `<div style="background-color: #145938; width: 20px; height: 20px; border-radius: 50%; border: 3px solid #E0FFC2; box-shadow: 0 0 10px rgba(0,0,0,0.5);"></div>`,
+        iconSize: [26, 26],
+        iconAnchor: [13, 13]
+    });
+
+    L.marker(punto.coords, { icon: customIcon }).addTo(map).on('click', () => {
         abrirVentanaLugar(punto);
     });
 });
@@ -46,68 +59,67 @@ window.buscarLugar = async function () {
         if (datos.length > 0) {
             const lat = parseFloat(datos[0].lat); const lon = parseFloat(datos[0].lon);
             map.flyTo([lat, lon], 14);
-            L.marker([lat, lon]).addTo(map).bindPopup(`<b>${datos[0].display_name.split(',')[0]}</b>`).openPopup();
+            L.marker([lat, lon]).addTo(map).bindPopup(`<b style="color:#145938; font-family:'Outfit';">${datos[0].display_name.split(',')[0]}</b>`).openPopup();
         }
     } catch (error) { console.error(error); }
 };
 
-// --- CONTROL DE VENTANAS (HUD a Modal Central) ---
-const ventanaCentral = document.getElementById('ventana-central');
-const btnCerrarVentana = document.getElementById('btn-cerrar-ventana');
+// --- 3. CONTROL DE VENTANAS CENTRALES (HUD) ---
+const overlayVentanas = document.getElementById('overlay-ventanas');
 const triggers = document.querySelectorAll('.nav-trigger');
 const vistasInternas = document.querySelectorAll('.vista-interna');
 
-// Abrir vista desde los íconos superiores
 triggers.forEach(trigger => {
     trigger.addEventListener('click', () => {
         const targetId = trigger.dataset.target;
 
-        // Ocultar la ventana de lugar si estuviera abierta
-        document.getElementById('ventana-lugar').classList.add('vista-oculta');
+        // Cierra el lugar específico si está abierto
+        document.getElementById('overlay-lugar').classList.replace('vista-activa', 'vista-oculta');
 
-        // Mostrar la ventana central
-        ventanaCentral.classList.remove('vista-oculta');
+        if (targetId === "mapa-puro") {
+            overlayVentanas.classList.replace('vista-activa', 'vista-oculta');
+            return;
+        }
 
-        // Cambiar la vista interna (Comunidad, Social, Perfil)
+        // Mostrar overlay difuminado
+        overlayVentanas.classList.replace('vista-oculta', 'vista-activa');
+
+        // Cambiar vista interna
         vistasInternas.forEach(vista => {
             if (vista.id === targetId) {
-                vista.classList.remove('vista-oculta');
-                vista.classList.add('vista-activa');
+                vista.classList.replace('vista-oculta', 'vista-activa');
             } else {
-                vista.classList.remove('vista-activa');
-                vista.classList.add('vista-oculta');
+                vista.classList.replace('vista-activa', 'vista-oculta');
             }
         });
     });
 });
 
-// Cerrar ventana central
-btnCerrarVentana.addEventListener('click', () => {
-    ventanaCentral.classList.add('vista-oculta');
+document.getElementById('btn-cerrar-ventana').addEventListener('click', () => {
+    overlayVentanas.classList.replace('vista-activa', 'vista-oculta');
 });
 
-// --- VENTANA DE LUGAR ESPECÍFICO ---
-const ventanaLugar = document.getElementById('ventana-lugar');
+// --- 4. VENTANA DE LUGAR ESPECÍFICO ---
+const overlayLugar = document.getElementById('overlay-lugar');
+
 document.getElementById('btn-cerrar-lugar').addEventListener('click', () => {
-    ventanaLugar.classList.add('vista-oculta');
+    overlayLugar.classList.replace('vista-activa', 'vista-oculta');
 });
 
 function abrirVentanaLugar(data) {
-    ventanaCentral.classList.add('vista-oculta'); // Ocultar la otra ventana para no solapar
+    overlayVentanas.classList.replace('vista-activa', 'vista-oculta'); // Ocultar centro
+
     document.getElementById('detalle-titulo').innerText = data.title;
     document.getElementById('detalle-descripcion').innerText = data.description;
-
-    // Si tienes imágenes reales en la carpeta, se cargarán aquí.
     document.getElementById('detalle-img').src = data.image;
 
-    ventanaLugar.classList.remove('vista-oculta');
+    overlayLugar.classList.replace('vista-oculta', 'vista-activa');
 }
 
-// --- LÓGICA DEL BOTÓN PUBLICAR (Conecta con Modal) ---
+// --- 5. PUBLICACIONES Y FIREBASE ---
 const modalPub = document.getElementById('modal-nueva-publicacion');
-document.getElementById('btn-nueva-publicacion').addEventListener('click', () => modalPub.classList.remove('vista-oculta'));
-document.getElementById('btn-quick-post').addEventListener('click', () => modalPub.classList.remove('vista-oculta'));
-document.getElementById('btn-cerrar-modal-publicacion').addEventListener('click', () => modalPub.classList.add('vista-oculta'));
+document.getElementById('btn-nueva-publicacion').addEventListener('click', () => modalPub.classList.replace('vista-oculta', 'vista-activa'));
+document.getElementById('btn-cerrar-modal-publicacion').addEventListener('click', () => modalPub.classList.replace('vista-activa', 'vista-oculta'));
 
 document.getElementById('btn-publicar').addEventListener('click', async () => {
     const titulo = document.getElementById('titulo').value;
@@ -122,9 +134,10 @@ document.getElementById('btn-publicar').addEventListener('click', async () => {
             titulo: titulo, lugar: lugar, descripcion: descripcion, fecha: new Date()
         });
         document.getElementById('titulo').value = "";
+        document.getElementById('lugar').value = "";
         document.getElementById('descripcion').value = "";
-        modalPub.classList.add('vista-oculta');
-        document.getElementById('btn-publicar').innerText = "Publicar en Raíz";
+        modalPub.classList.replace('vista-activa', 'vista-oculta');
+        document.getElementById('btn-publicar').innerText = "Publicar";
         cargarPublicaciones();
     } catch (e) { console.error(e); }
 });
@@ -133,19 +146,26 @@ async function cargarPublicaciones() {
     const feedComunidad = document.getElementById('feed-comunidad');
     try {
         const qs = await getDocs(query(collection(db, "publicaciones")));
-        let html = '<div class="etiqueta-top">ACTIVIDADES RECIENTES</div>';
+        let html = '<div class="etiqueta-top">FEED DE ACCIÓN</div>';
+
+        if (qs.empty) {
+            html += `<p style="color:white; text-align:center; font-weight:bold; margin-top:20px;">Aún no hay publicaciones. ¡Sé el primero!</p>`;
+        }
+
         qs.forEach((docSnap) => {
             const data = docSnap.data();
             html += `
                 <div class="tarjeta-feed">
-                    <div style="color: white; font-weight: bold; font-size: 18px; margin-bottom: 10px;">${data.titulo}</div>
-                    <div style="color: var(--leaf); margin-bottom: 15px;">📍 ${data.lugar}</div>
-                    <div class="linea-placeholder"></div>
-                    <div class="foto-placeholder">${data.descripcion}</div>
+                    <h3 style="margin-top:0; font-size: 20px;">${data.titulo}</h3>
+                    <p style="color: var(--leaf); font-weight: bold; margin-bottom: 15px;">📍 ${data.lugar}</p>
+                    <div style="background: rgba(255,255,255,0.2); height: 2px; width: 100%; margin-bottom: 15px;"></div>
+                    <p style="font-size: 15px; line-height: 1.5; color: rgba(255,255,255,0.9);">${data.descripcion}</p>
                 </div>
             `;
         });
         feedComunidad.innerHTML = html;
     } catch (e) { console.error(e); }
 }
+
+// Cargar al inicio
 cargarPublicaciones();

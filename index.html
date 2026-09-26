@@ -7,7 +7,6 @@
     <title>Raíz App</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -15,232 +14,217 @@
 <body>
 
     <!-- PANTALLA DE BIENVENIDA -->
-    <div id="pantalla-bienvenida" class="pantalla-bienvenida">
+    <div id="pantalla-bienvenida" class="pantalla-bienvenida vista-activa">
         <div class="bienvenida-col-izq">
-            <div class="bienvenida-titulo">BIENVENIDA</div>
+            <div class="bienvenida-titulo">RAÍZ JUNÍN</div>
             <div class="bienvenida-intro">
-                <p>INTRODUCCION</p>
+                <p>Descubre y comparte iniciativas de conservación en tu región. Únete a la red de acción regenerativa.
+                </p>
                 <div class="linea-texto"></div>
                 <div class="linea-texto"></div>
                 <div class="linea-texto corta"></div>
-                <br>
-                <div class="linea-texto"></div>
-                <div class="linea-texto"></div>
-                <div class="linea-texto media"></div>
             </div>
         </div>
         <div class="bienvenida-col-der">
-            <div class="img-placeholder">IMAGEN DE VIAJEROS CAMINANDO EN EL CAMPO</div>
-            <button id="btn-explorar" class="btn-bienvenida">EXPLORAR</button>
+            <div class="img-placeholder"
+                style="background-image: url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800'); background-size: cover; background-position: center;">
+                <div style="background: rgba(20, 89, 56, 0.7); padding: 20px; border-radius: 15px;">CONECTA CON LA
+                    NATURALEZA</div>
+            </div>
+            <button id="btn-explorar" class="btn-bienvenida">EXPLORAR EL MAPA</button>
         </div>
     </div>
 
     <!-- MAPA DE FONDO -->
     <div id="mapa-fondo"></div>
 
-    <!-- BARRA SUPERIOR FLOTANTE -->
+    <!-- BARRA SUPERIOR FLOTANTE (HUD) CON DIFUMINADO -->
     <div class="top-hud">
         <div class="hud-izq">
             <div class="barra-busqueda-hud">
-                <input type="text" id="input-busqueda" placeholder="BARRA DE BÚSQUEDA">
+                <input type="text" id="input-busqueda" placeholder="Buscar lugar (Ej. La Merced)">
             </div>
             <button class="hud-btn-circle" onclick="buscarLugar()"><i data-lucide="search"></i></button>
-            <button class="hud-btn-circle"><i data-lucide="corner-up-right"></i></button>
         </div>
         <div class="hud-der">
-            <!-- Iconos de Navegación -->
-            <button class="hud-btn-circle nav-trigger" data-target="vista-comunidad"><i
-                    data-lucide="alert-circle"></i></button>
-            <button class="hud-btn-circle nav-trigger" data-target="vista-social"><i data-lucide="users"></i></button>
-            <button class="hud-btn-circle nav-trigger" data-target="vista-perfil"><i data-lucide="user"></i></button>
+            <button class="hud-btn-circle nav-trigger" data-target="mapa-puro" title="Ver Mapa"><i
+                    data-lucide="map"></i></button>
+            <button class="hud-btn-circle nav-trigger" data-target="vista-comunidad" title="Comunidad"><i
+                    data-lucide="leaf"></i></button>
+            <button class="hud-btn-circle nav-trigger" data-target="vista-social" title="Raíz Social"><i
+                    data-lucide="users"></i></button>
+            <button class="hud-btn-circle nav-trigger" data-target="vista-perfil" title="Mi Perfil"><i
+                    data-lucide="user"></i></button>
         </div>
     </div>
 
-    <!-- VENTANA CENTRAL VERDE (Contenedor principal de las vistas) -->
-    <main id="ventana-central" class="ventana-central vista-oculta">
-        <button id="btn-cerrar-ventana" class="btn-cerrar-ventana"><i data-lucide="x"></i></button>
+    <!-- OVERLAY DIFUMINADO PARA VENTANAS CENTRALES -->
+    <div id="overlay-ventanas" class="overlay-difuminado vista-oculta">
 
-        <!-- VISTA 1: COMUNIDAD (3 Columnas) -->
-        <div id="vista-comunidad" class="vista-interna vista-activa">
-            <div class="header-vista">COMUNIDAD</div>
-            <div class="grid-3-columnas">
-                <!-- Columna Izquierda: Menú -->
-                <div class="col-izq-menu">
-                    <button class="btn-menu-lateral destacado" id="btn-nueva-publicacion">
-                        <div class="circulo-icono"></div> CREAR ACTIVIDAD
-                    </button>
-                    <button class="btn-menu-lateral">
-                        <div class="cuadro-icono"></div> MIS ACTIVIDADES
-                    </button>
-                    <button class="btn-menu-lateral">
-                        <div class="cuadro-icono"></div> LUGARES
-                    </button>
-                    <button class="btn-menu-lateral">
-                        <div class="cuadro-icono"></div> ...
-                    </button>
-                    <button class="btn-menu-lateral">
-                        <div class="cuadro-icono"></div> ...
-                    </button>
-                </div>
+        <!-- VENTANA CENTRAL VERDE -->
+        <main id="ventana-central" class="ventana-central">
+            <button id="btn-cerrar-ventana" class="btn-cerrar-ventana"><i data-lucide="x"></i></button>
 
-                <!-- Columna Central: Feed de Actividades -->
-                <div class="col-centro-feed" id="feed-comunidad">
-                    <div class="etiqueta-top">ACTIVIDAD</div>
-                    <div class="tarjeta-feed">
-                        <div class="linea-placeholder"></div>
-                        <div class="linea-placeholder"></div>
-                        <div class="foto-placeholder">FOTO Y TOCAR PARA MAS INFO</div>
+            <!-- VISTA 1: COMUNIDAD -->
+            <div id="vista-comunidad" class="vista-interna vista-oculta">
+                <div class="header-vista">Muro de la Comunidad</div>
+                <div class="grid-3-columnas">
+                    <div class="col-izq-menu">
+                        <button class="btn-menu-lateral destacado" id="btn-nueva-publicacion">
+                            <div class="circulo-icono"><i data-lucide="plus" style="color: var(--forest);"></i></div>
+                            PUBLICAR ACTIVIDAD
+                        </button>
+                        <button class="btn-menu-lateral">
+                            <div class="cuadro-icono"><i data-lucide="list"></i></div> Mis Actividades
+                        </button>
+                        <button class="btn-menu-lateral">
+                            <div class="cuadro-icono"><i data-lucide="map-pin"></i></div> Lugares Guardados
+                        </button>
                     </div>
-                </div>
 
-                <!-- Columna Derecha: Calendario -->
-                <div class="col-der-calendario">
-                    <div class="etiqueta-top">CALENDARIO</div>
-                    <div class="calendario-caja" id="calendario-grid">
-                        <!-- Generado por JS -->
-                        <p style="text-align:center; margin-top:50px; color:#666;">Mes Actual</p>
+                    <div class="col-centro-feed" id="feed-comunidad">
+                        <div class="etiqueta-top">FEED DE ACCIÓN</div>
+                        <!-- Las publicaciones de Firebase cargarán aquí -->
+                        <div class="tarjeta-feed">
+                            <h3 style="margin-top:0;">Reforestación en Concepción</h3>
+                            <p style="color: var(--leaf);">📍 Vivero Amor Nativas</p>
+                            <div class="foto-placeholder"
+                                style="background-image: url('https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=500'); background-size: cover;">
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- VISTA 2: RAÍZ SOCIAL (3 Columnas) -->
-        <div id="vista-social" class="vista-interna vista-oculta">
-            <div class="header-vista">RAÍZ SOCIAL</div>
-            <div class="grid-3-columnas">
-                <!-- Columna Izquierda: Menú Social -->
-                <div class="col-izq-menu">
-                    <button class="btn-menu-lateral destacado" id="btn-quick-post">
-                        <div class="circulo-icono"></div> PUBLICAR...
-                    </button>
-                    <button class="btn-menu-lateral">
-                        <div class="cuadro-icono"></div> AMIGOS
-                    </button>
-                    <button class="btn-menu-lateral">
-                        <div class="cuadro-icono"></div> GRUPOS
-                    </button>
-                    <button class="btn-menu-lateral">
-                        <div class="cuadro-icono"></div> GUARDADO
-                    </button>
-                    <button class="btn-menu-lateral">
-                        <div class="cuadro-icono"></div> REELS
-                    </button>
-                </div>
-
-                <!-- Columna Central: Feed Social -->
-                <div class="col-centro-feed" id="social-feed-content">
-                    <div class="tarjeta-social">
-                        <div class="social-header">
-                            <div class="circulo-foto">FOTO</div>
-                            <div class="social-nombre">NOMBRE</div>
-                        </div>
-                        <div class="linea-placeholder"></div>
-                        <div class="linea-placeholder"></div>
-                        <div class="foto-placeholder grande">FOTO</div>
-                    </div>
-                </div>
-
-                <!-- Columna Derecha: Contactos -->
-                <div class="col-der-contactos">
-                    <div class="etiqueta-top">CONTACTOS</div>
-                    <div class="lista-contactos" id="chats-contactos-list">
-                        <div class="contacto-item">
-                            <div class="circulo-icono"></div>
-                            <div class="contacto-nombre">AMIGOS</div>
-                        </div>
-                        <div class="contacto-item">
-                            <div class="circulo-icono"></div>
-                            <div class="contacto-nombre">AMIGOS</div>
-                        </div>
-                        <div class="contacto-item">
-                            <div class="circulo-icono"></div>
-                            <div class="contacto-nombre">AMIGOS</div>
+                    <div class="col-der-calendario">
+                        <div class="etiqueta-top">EVENTOS DE SEPTIEMBRE</div>
+                        <div class="calendario-caja">
+                            <h4 style="color:#333; margin-top:0;">Próximas salidas</h4>
+                            <div
+                                style="background: rgba(20,89,56,0.1); padding: 10px; border-radius: 10px; margin-bottom: 10px; color: #333;">
+                                <strong>28 Sept:</strong> Limpieza Ruta Andina
+                            </div>
+                            <div
+                                style="background: rgba(20,89,56,0.1); padding: 10px; border-radius: 10px; color: #333;">
+                                <strong>05 Oct:</strong> Taller Ñahuinpuquio
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- VISTA 3: PERFIL -->
-        <div id="vista-perfil" class="vista-interna vista-oculta">
-            <div class="header-vista" style="width: 200px; margin-left: 20px;">NOMBRE</div>
-            <div class="perfil-layout">
-                <div class="perfil-avatar-gigante">FT DE PERFIL</div>
-                <div class="perfil-info-fila">
-                    <div>CUENTA CON @</div>
-                    <div>MIEMBRO HACE...</div>
-                </div>
-                <div class="perfil-stats-fila">
-                    <div class="stat-box">SEGUIDORES</div>
-                    <div class="stat-box">SIGUIENDO</div>
-                </div>
-                <div class="perfil-notas-fila">
-                    <div class="nota-caja">AGREGAR NOTA</div>
-                    <div class="nota-caja">FOTO QUE ACOMPAÑA LA NOTA</div>
-                </div>
-                <div class="perfil-logros-fila">
-                    <div class="logro-box">LOGROS</div>
-                </div>
-            </div>
-        </div>
-    </main>
+            <!-- VISTA 2: RAÍZ SOCIAL -->
+            <div id="vista-social" class="vista-interna vista-oculta">
+                <div class="header-vista">Raíz Social</div>
+                <div class="grid-3-columnas">
+                    <div class="col-izq-menu">
+                        <button class="btn-menu-lateral destacado">
+                            <div class="circulo-icono"><i data-lucide="message-square"
+                                    style="color: var(--forest);"></i></div> NUEVO FORO
+                        </button>
+                        <button class="btn-menu-lateral">
+                            <div class="cuadro-icono"><i data-lucide="users"></i></div> Amigos
+                        </button>
+                        <button class="btn-menu-lateral">
+                            <div class="cuadro-icono"><i data-lucide="bookmark"></i></div> Guardados
+                        </button>
+                    </div>
 
-    <!-- VENTANA DE DETALLES DEL LUGAR (Diseño Híbrido) -->
-    <div id="ventana-lugar" class="ventana-lugar vista-oculta">
-        <button id="btn-cerrar-lugar" class="btn-cerrar-ventana"
-            style="top: 10px; right: 10px; background: rgba(0,0,0,0.5);"><i data-lucide="x"></i></button>
+                    <div class="col-centro-feed">
+                        <div class="tarjeta-social">
+                            <div class="social-header">
+                                <div class="circulo-foto">F</div>
+                                <div class="social-nombre" style="color:#333;">Farid</div>
+                            </div>
+                            <p>Buscando equipo para la ruta de este fin de semana. ¿Quién se apunta?</p>
+                        </div>
+                    </div>
 
-        <div class="lugar-top-half">
-            <div class="header-vista lugar-titulo" id="detalle-titulo">NOMBRE DEL LUGAR</div>
-            <img src="" id="detalle-img" class="lugar-imagen-fondo" alt="Foto">
-        </div>
-
-        <div class="lugar-bottom-half">
-            <div class="lugar-col-izq">
-                <div class="etiqueta-lugar">DESCRIPCIÓN</div>
-                <p id="detalle-descripcion" class="texto-blanco"></p>
-                <div class="etiqueta-lugar" style="margin-top:20px;">RESEÑAS</div>
-                <div class="resena-item">
-                    <div class="circulo-foto">FOTO</div>
-                    <div class="resena-contenido">
-                        <div class="resena-nombre">NOMBRE</div>
-                        <div class="linea-placeholder verde"></div>
+                    <div class="col-der-contactos">
+                        <div class="etiqueta-top">AMIGOS CONECTADOS</div>
+                        <div class="lista-contactos">
+                            <div class="contacto-item">
+                                <div class="circulo-icono"
+                                    style="background:var(--forest); color:white; display:flex; align-items:center; justify-content:center;">
+                                    A</div>
+                                <div class="contacto-nombre" style="color:#333;">Ana Pérez</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="lugar-col-der">
-                <div class="col-servicios">
-                    <button class="btn-servicio">SERVICIOS</button>
-                    <button class="btn-servicio">HOTEL</button>
-                    <button class="btn-servicio">COMIDA</button>
-                    <button class="btn-servicio">ARTESANIA</button>
-                </div>
-                <div class="col-fotos">
-                    <div class="grid-fotos-pequenas">
-                        <div class="foto-sq">FOTOS</div>
-                        <div class="foto-sq">FOTOS</div>
-                        <div class="foto-sq">FOTOS</div>
-                        <div class="foto-sq">FOTOS</div>
+            <!-- VISTA 3: PERFIL -->
+            <div id="vista-perfil" class="vista-interna vista-oculta">
+                <div class="header-vista" style="align-self: flex-start; margin-left: 20px;">Mi Espacio</div>
+                <div class="perfil-layout">
+                    <div class="perfil-avatar-gigante">V</div>
+                    <div class="perfil-info-fila">
+                        <div style="font-size: 24px;">Valentino Ratto</div>
+                        <div>Miembro desde 2026</div>
                     </div>
-                    <div class="foto-sq ancha">...</div>
+                    <div class="perfil-stats-fila">
+                        <div class="stat-box">12 Actividades</div>
+                        <div class="stat-box">5 Lugares descubiertos</div>
+                    </div>
+                    <div class="perfil-logros-fila" style="margin-top: 20px;">
+                        <div class="logro-box">🏅 Explorador Novato</div>
+                        <div class="logro-box" style="margin-left: 10px;">🌱 Guardián de Semillas</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- OVERLAY PARA DETALLE DE LUGAR -->
+    <div id="overlay-lugar" class="overlay-difuminado vista-oculta">
+        <div id="ventana-lugar" class="ventana-lugar">
+            <button id="btn-cerrar-lugar" class="btn-cerrar-ventana"
+                style="top: 15px; right: 20px; background: rgba(0,0,0,0.6); border-radius: 50%; padding: 5px;"><i
+                    data-lucide="x"></i></button>
+
+            <div class="lugar-top-half">
+                <div class="header-vista lugar-titulo" id="detalle-titulo">Nombre del Lugar</div>
+                <img src="" id="detalle-img" class="lugar-imagen-fondo" alt="Foto del lugar">
+            </div>
+
+            <div class="lugar-bottom-half">
+                <div class="lugar-col-izq">
+                    <div class="etiqueta-lugar">ACERCA DE ESTE LUGAR</div>
+                    <p id="detalle-descripcion" class="texto-blanco"></p>
+
+                    <div class="etiqueta-lugar" style="margin-top:30px;">EXPERIENCIAS</div>
+                    <div class="resena-item">
+                        <div class="circulo-foto" style="background:var(--leaf); color:var(--forest);">M</div>
+                        <div class="resena-contenido">
+                            <div class="resena-nombre" style="color:#333;">María García</div>
+                            <p style="color:white; margin-top:5px; font-size:14px;">Increíble lugar para conectar con la
+                                naturaleza. Los quinuales son hermosos.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lugar-col-der">
+                    <div class="col-servicios">
+                        <button class="btn-servicio"><i data-lucide="info"></i> Información</button>
+                        <button class="btn-servicio"><i data-lucide="map-pin"></i> Cómo llegar</button>
+                        <button class="btn-servicio"><i data-lucide="image"></i> Galería</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL CREAR PUBLICACIÓN (Reutilizado del original) -->
-    <div class="modal-overlay vista-oculta" id="modal-nueva-publicacion">
+    <!-- MODAL CREAR PUBLICACIÓN -->
+    <div class="overlay-difuminado vista-oculta" id="modal-nueva-publicacion" style="z-index: 6000;">
         <div class="modal-content" style="background: var(--forest); color: white;">
-            <h2 style="margin-top: 0;">Nueva Publicación</h2>
-            <input type="text" id="titulo" placeholder="Ej: Reforestación en Concepción" class="input-verde">
-            <input type="text" id="lugar" placeholder="Lugar exacto de la salida" class="input-verde">
-            <textarea id="descripcion" placeholder="Describe tu experiencia..." style="height: 100px;"
+            <h2 style="margin-top: 0;">Subir Actividad</h2>
+            <input type="text" id="titulo" placeholder="Ej: Limpieza en el río..." class="input-verde">
+            <input type="text" id="lugar" placeholder="¿Dónde fue?" class="input-verde">
+            <textarea id="descripcion" placeholder="Cuenta tu experiencia..." style="height: 100px;"
                 class="input-verde"></textarea>
             <div style="display: flex; gap: 10px; margin-top: 15px;">
                 <button class="btn-servicio" id="btn-cerrar-modal-publicacion">Cancelar</button>
                 <button class="btn-servicio" id="btn-publicar"
-                    style="background: var(--leaf); color: var(--forest);">Publicar en Raíz</button>
+                    style="background: var(--leaf); color: var(--forest);">Publicar</button>
             </div>
         </div>
     </div>
