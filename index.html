@@ -8,366 +8,243 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- Barra Lateral Exclusiva de PC -->
-    <aside class="sidebar-desktop">
-        <div class="sidebar-logo">Raíz</div>
-        <nav class="sidebar-nav">
-            <a href="#" class="nav-btn active" data-target="inicio-container">Mapa y Muro</a>
-            <a href="#" class="nav-btn" data-target="eventos-container">Eventos</a>
-            <a href="#" class="nav-btn" data-target="chat-container">Social</a>
-            <a href="#" class="nav-btn" data-target="perfil-container">Mi Perfil</a>
-        </nav>
-    </aside>
-
-    <div id="mapa-fondo"></div>
-
-    <div class="buscador-mapa">
-        <input type="text" id="input-busqueda" placeholder="Buscar lugar (Ej: La Merced)...">
-        <button onclick="buscarLugar()">Buscar</button>
-        <div id="sugerencias-busqueda" class="sugerencias-container vista-oculta"></div>
+    <!-- PANTALLA DE BIENVENIDA -->
+    <div id="pantalla-bienvenida" class="pantalla-bienvenida">
+        <div class="bienvenida-col-izq">
+            <div class="bienvenida-titulo">BIENVENIDA</div>
+            <div class="bienvenida-intro">
+                <p>INTRODUCCION</p>
+                <div class="linea-texto"></div>
+                <div class="linea-texto"></div>
+                <div class="linea-texto corta"></div>
+                <br>
+                <div class="linea-texto"></div>
+                <div class="linea-texto"></div>
+                <div class="linea-texto media"></div>
+            </div>
+        </div>
+        <div class="bienvenida-col-der">
+            <div class="img-placeholder">IMAGEN DE VIAJEROS CAMINANDO EN EL CAMPO</div>
+            <button id="btn-explorar" class="btn-bienvenida">EXPLORAR</button>
+        </div>
     </div>
 
-    <!-- FAB Agregar Lugar -->
-    <button class="fab-agregar-lugar" id="btn-abrir-modal-lugar">
-        <span>+</span>
-    </button>
+    <!-- MAPA DE FONDO -->
+    <div id="mapa-fondo"></div>
 
-    <!-- VISTAS PRINCIPALES (Ahora con desplazamiento lateral) -->
-    <main id="main-content">
+    <!-- BARRA SUPERIOR FLOTANTE -->
+    <div class="top-hud">
+        <div class="hud-izq">
+            <div class="barra-busqueda-hud">
+                <input type="text" id="input-busqueda" placeholder="BARRA DE BÚSQUEDA">
+            </div>
+            <button class="hud-btn-circle" onclick="buscarLugar()"><i data-lucide="search"></i></button>
+            <button class="hud-btn-circle"><i data-lucide="corner-up-right"></i></button>
+        </div>
+        <div class="hud-der">
+            <!-- Iconos de Navegación -->
+            <button class="hud-btn-circle nav-trigger" data-target="vista-comunidad"><i
+                    data-lucide="alert-circle"></i></button>
+            <button class="hud-btn-circle nav-trigger" data-target="vista-social"><i data-lucide="users"></i></button>
+            <button class="hud-btn-circle nav-trigger" data-target="vista-perfil"><i data-lucide="user"></i></button>
+        </div>
+    </div>
 
-        <!-- VISTA 1: MAPA Y MURO -->
-        <div id="inicio-container" class="vista-activa">
-            <div class="sheet-container">
-                <div class="drag-indicator-desktop"></div>
-                <div class="content-wrapper">
-                    <div class="drag-indicator"></div>
+    <!-- VENTANA CENTRAL VERDE (Contenedor principal de las vistas) -->
+    <main id="ventana-central" class="ventana-central vista-oculta">
+        <button id="btn-cerrar-ventana" class="btn-cerrar-ventana"><i data-lucide="x"></i></button>
 
-                    <h1>Comunidad Raíz</h1>
-                    <p class="subtitle">Descubre y comparte salidas regenerativas.</p>
+        <!-- VISTA 1: COMUNIDAD (3 Columnas) -->
+        <div id="vista-comunidad" class="vista-interna vista-activa">
+            <div class="header-vista">COMUNIDAD</div>
+            <div class="grid-3-columnas">
+                <!-- Columna Izquierda: Menú -->
+                <div class="col-izq-menu">
+                    <button class="btn-menu-lateral destacado" id="btn-nueva-publicacion">
+                        <div class="circulo-icono"></div> CREAR ACTIVIDAD
+                    </button>
+                    <button class="btn-menu-lateral">
+                        <div class="cuadro-icono"></div> MIS ACTIVIDADES
+                    </button>
+                    <button class="btn-menu-lateral">
+                        <div class="cuadro-icono"></div> LUGARES
+                    </button>
+                    <button class="btn-menu-lateral">
+                        <div class="cuadro-icono"></div> ...
+                    </button>
+                    <button class="btn-menu-lateral">
+                        <div class="cuadro-icono"></div> ...
+                    </button>
+                </div>
 
-                    <div class="swiper mySwiper">
-                        <div class="swiper-wrapper">
-                            <div class="swiper-slide"><img src="imagenes/img1.jpg" alt="Galeria 1"></div>
-                            <div class="swiper-slide"><img src="imagenes/img2.jpg" alt="Galeria 2"></div>
-                            <div class="swiper-slide"><img src="imagenes/img3.jpg" alt="Galeria 3"></div>
-                            <div class="swiper-slide"><img src="imagenes/img4.jpg" alt="Galeria 4"></div>
-                            <div class="swiper-slide"><img src="imagenes/img5.jpg" alt="Galeria 5"></div>
-                        </div>
-                        <div class="swiper-pagination"></div>
+                <!-- Columna Central: Feed de Actividades -->
+                <div class="col-centro-feed" id="feed-comunidad">
+                    <div class="etiqueta-top">ACTIVIDAD</div>
+                    <div class="tarjeta-feed">
+                        <div class="linea-placeholder"></div>
+                        <div class="linea-placeholder"></div>
+                        <div class="foto-placeholder">FOTO Y TOCAR PARA MAS INFO</div>
                     </div>
+                </div>
 
-                    <div id="info-rutas" class="rutas-info">
-                        <h2>Puntos de Conservación</h2>
-                        <ul>
-                            <li>El Vivero Amor Nativas en la Provincia de Concepción produce plantas de Quinuales y
-                                tiene el objetivo de aprender a propagar especies nativas.</li>
-                            <li>La Ruta Andino Selvatica ofrece trekking por la puna húmeda y los bosques de neblina en
-                                La Unión-Huasahuasi.</li>
-                            <li>Ilish Pichacoto es un área con zonas arqueológicas, camping y un camino de reflexión,
-                                siendo la primera área de conservación de Junín administrada por la comunidad Campesina
-                                de Saño.</li>
-                            <li>La Casa Hospedaje Rumiwasi promueve la agricultura regenerativa y resguarda la cultura
-                                de la comunidad en Saño.</li>
-                            <li>El Proyecto de Restauración Vegetal Asociación Villasol-Yauli cuenta con 27 hectáreas de
-                                bosques de Quinual para restaurar espacios.</li>
-                            <li>En Ñahuinpuquio se realiza la plantación comunitaria de más de 3000 quinuales al año en
-                                medio de agricultura regenerativa y qochas.</li>
-                            <li>Wasi Kamaq es un espacio de innovación ancestral con hornos portátiles y plantas
-                                medicinales ubicado en San Jerónimo.</li>
-                        </ul>
+                <!-- Columna Derecha: Calendario -->
+                <div class="col-der-calendario">
+                    <div class="etiqueta-top">CALENDARIO</div>
+                    <div class="calendario-caja" id="calendario-grid">
+                        <!-- Generado por JS -->
+                        <p style="text-align:center; margin-top:50px; color:#666;">Mes Actual</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- VISTA NUEVA: EVENTOS -->
-        <div id="eventos-container" class="vista-oculta">
-            <div class="sheet-container">
-                <div class="drag-indicator-desktop"></div>
-                <div class="content-wrapper">
-                    <div class="drag-indicator"></div>
-                    <h1>Eventos y Foros</h1>
-                    <p class="subtitle">Coordina salidas y conversa con la comunidad.</p>
-
-                    <div class="calendario-section"
-                        style="background: #fff; padding: 20px; border-radius: 20px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
-                        <div class="calendario-header"
-                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <button id="btn-mes-anterior"
-                                style="background:none; border:none; font-size:24px; cursor:pointer; font-weight:bold; color:var(--forest);">&lt;</button>
-                            <h2 id="mes-año-actual" style="margin:0;">Mes Año</h2>
-                            <button id="btn-mes-siguiente"
-                                style="background:none; border:none; font-size:24px; cursor:pointer; font-weight:bold; color:var(--forest);">&gt;</button>
-                        </div>
-                        <div
-                            style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: 700; color: rgba(6,71,52,0.5); font-size: 13px; margin-bottom: 10px;">
-                            <div>Dom</div>
-                            <div>Lun</div>
-                            <div>Mar</div>
-                            <div>Mié</div>
-                            <div>Jue</div>
-                            <div>Vie</div>
-                            <div>Sáb</div>
-                        </div>
-                        <div class="calendario-grid" id="calendario-grid"
-                            style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;">
-                            <!-- Generado por JS -->
-                        </div>
-                        <p style="font-size: 13px; color: #666; margin-top:15px; text-align: center;">Haz clic en un día
-                            para proponer o ver eventos.</p>
-                    </div>
-
-                    <div class="foro-section">
-                        <h2>Foro de la Comunidad</h2>
-                        <div class="form-container">
-                            <input type="text" id="foro-titulo" placeholder="Ej: Ideas para el fin de semana...">
-                            <textarea id="foro-desc" placeholder="Escribe tu mensaje..."
-                                style="height: 80px;"></textarea>
-                            <button id="btn-publicar-foro" class="btn-principal">Crear Tema</button>
-                        </div>
-                        <div id="lista-temas-foro"></div>
-                    </div>
+        <!-- VISTA 2: RAÍZ SOCIAL (3 Columnas) -->
+        <div id="vista-social" class="vista-interna vista-oculta">
+            <div class="header-vista">RAÍZ SOCIAL</div>
+            <div class="grid-3-columnas">
+                <!-- Columna Izquierda: Menú Social -->
+                <div class="col-izq-menu">
+                    <button class="btn-menu-lateral destacado" id="btn-quick-post">
+                        <div class="circulo-icono"></div> PUBLICAR...
+                    </button>
+                    <button class="btn-menu-lateral">
+                        <div class="cuadro-icono"></div> AMIGOS
+                    </button>
+                    <button class="btn-menu-lateral">
+                        <div class="cuadro-icono"></div> GRUPOS
+                    </button>
+                    <button class="btn-menu-lateral">
+                        <div class="cuadro-icono"></div> GUARDADO
+                    </button>
+                    <button class="btn-menu-lateral">
+                        <div class="cuadro-icono"></div> REELS
+                    </button>
                 </div>
-            </div>
-        </div>
 
-        <!-- VISTA 2: RAÍZ SOCIAL -->
-        <div id="chat-container" class="vista-oculta social-bg">
-            <div id="social-feed-view" class="social-view active-view">
-                <div class="social-topbar">
-                    <h1 class="social-title">Social</h1>
-                    <div style="display: flex; gap: 15px; align-items: center;">
-                        <button class="icon-btn" id="btn-add-friend" title="Añadir amigos"><i
-                                data-lucide="user-plus"></i></button>
-                        <button class="icon-btn" id="btn-open-chats" title="Mensajes"><i
-                                data-lucide="message-circle"></i></button>
-                        <button class="icon-btn" title="Menú"><i data-lucide="menu"></i></button>
+                <!-- Columna Central: Feed Social -->
+                <div class="col-centro-feed" id="social-feed-content">
+                    <div class="tarjeta-social">
+                        <div class="social-header">
+                            <div class="circulo-foto">FOTO</div>
+                            <div class="social-nombre">NOMBRE</div>
+                        </div>
+                        <div class="linea-placeholder"></div>
+                        <div class="linea-placeholder"></div>
+                        <div class="foto-placeholder grande">FOTO</div>
                     </div>
                 </div>
 
-                <div class="quick-post-container" id="btn-quick-post"
-                    style="display:flex; align-items:center; gap: 15px; padding: 15px 20px; border-bottom: 1px solid rgba(224,255,194,0.1); cursor: pointer;">
-                    <div class="post-avatar"
-                        style="display:flex; align-items:center; justify-content:center; color:var(--forest); font-weight:bold; width: 45px; height: 45px; font-size: 18px;">
-                        U</div>
-                    <div
-                        style="flex: 1; border-radius: 30px; border: 1px solid rgba(224,255,194,0.2); background: rgba(0,0,0,0.2); color: var(--leaf); padding: 12px 20px; font-size: 15px;">
-                        ¿Qué vas a compartir hoy?</div>
-                    <i data-lucide="image" style="color: var(--leaf); opacity: 0.8;"></i>
-                </div>
-
-                <div class="social-feed-content" id="social-feed-content">
-                    <!-- Posts generados por JS -->
-                </div>
-
-                <button class="fab-agregar-lugar vista-oculta" id="btn-nueva-publicacion" style="bottom: 90px;">
-                    <i data-lucide="plus" style="color: var(--forest); width: 28px; height: 28px;"></i>
-                </button>
-            </div>
-
-            <div id="social-chats-panel" class="chat-sheet-panel">
-                <div class="drag-indicator" style="background: rgba(255,255,255,0.3);"></div>
-                <div class="social-topbar">
-                    <button class="icon-btn" id="btn-close-chats"><i data-lucide="chevron-down"></i></button>
-                    <h1 class="social-title">Chat Raíz</h1>
-                    <button class="icon-btn"><i data-lucide="search"></i></button>
-                </div>
-                <div class="chats-content">
-                    <h2 class="social-section-title">Chats Recientes</h2>
-                    <div id="chats-recientes-list"></div>
-                    <h2 class="social-section-title" style="margin-top: 20px;">Contactos</h2>
-                    <div id="chats-contactos-list"></div>
-                </div>
-            </div>
-
-            <div id="chat-activo-panel" class="chat-sheet-panel"
-                style="z-index: 3001; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);">
-                <div class="social-topbar">
-                    <button class="icon-btn" id="btn-close-chat-activo"><i data-lucide="arrow-left"></i></button>
-                    <h1 class="social-title" id="chat-activo-nombre">Usuario</h1>
-                    <div></div>
-                </div>
-                <div id="chat-mensajes" class="chat-mensajes-area"></div>
-                <div class="chat-input-area">
-                    <input type="text" id="chat-input-text" placeholder="Mensaje...">
-                    <button class="icon-btn" id="btn-enviar-mensaje"><i data-lucide="send"></i></button>
+                <!-- Columna Derecha: Contactos -->
+                <div class="col-der-contactos">
+                    <div class="etiqueta-top">CONTACTOS</div>
+                    <div class="lista-contactos" id="chats-contactos-list">
+                        <div class="contacto-item">
+                            <div class="circulo-icono"></div>
+                            <div class="contacto-nombre">AMIGOS</div>
+                        </div>
+                        <div class="contacto-item">
+                            <div class="circulo-icono"></div>
+                            <div class="contacto-nombre">AMIGOS</div>
+                        </div>
+                        <div class="contacto-item">
+                            <div class="circulo-icono"></div>
+                            <div class="contacto-nombre">AMIGOS</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- VISTA 3: PERFIL -->
-        <div id="perfil-container" class="vista-oculta">
-            <div class="sheet-container">
-                <div class="drag-indicator-desktop"></div>
-                <div class="content-wrapper" style="text-align: center; padding-top: 50px;">
-                    <div class="drag-indicator"></div>
-
-                    <div id="perfil-desconectado">
-                        <div
-                            style="width: 100px; height: 100px; background: #eee; border-radius: 50%; color: #aaa; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 20px auto;">
-                            ?</div>
-                        <h1>Únete a la Comunidad</h1>
-                        <p class="subtitle">Inicia sesión para interactuar con la comunidad.</p>
-                        <button id="btn-login-google" class="btn-principal"
-                            style="max-width: 200px; margin-top: 20px;">Iniciar Sesión con Google</button>
-                    </div>
-
-                    <div id="perfil-conectado" class="vista-oculta">
-                        <img id="perfil-foto" src=""
-                            style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin: 0 auto 20px auto; border: 3px solid var(--forest);">
-                        <h1 id="perfil-nombre">Mi Perfil Raíz</h1>
-                        <p class="subtitle" id="perfil-email">correo@ejemplo.com</p>
-                        <span id="badge-admin" class="vista-oculta"
-                            style="background: var(--forest); color: var(--leaf); padding: 5px 15px; border-radius: 100px; font-size: 12px; font-weight: bold; margin-bottom: 20px; display: inline-block;">Administrador
-                            (Owner)</span>
-                        <br>
-                        <button id="btn-logout" class="btn-secundario"
-                            style="max-width: 200px; margin-top: 20px;">Cerrar Sesión</button>
-                    </div>
+        <div id="vista-perfil" class="vista-interna vista-oculta">
+            <div class="header-vista" style="width: 200px; margin-left: 20px;">NOMBRE</div>
+            <div class="perfil-layout">
+                <div class="perfil-avatar-gigante">FT DE PERFIL</div>
+                <div class="perfil-info-fila">
+                    <div>CUENTA CON @</div>
+                    <div>MIEMBRO HACE...</div>
+                </div>
+                <div class="perfil-stats-fila">
+                    <div class="stat-box">SEGUIDORES</div>
+                    <div class="stat-box">SIGUIENDO</div>
+                </div>
+                <div class="perfil-notas-fila">
+                    <div class="nota-caja">AGREGAR NOTA</div>
+                    <div class="nota-caja">FOTO QUE ACOMPAÑA LA NOTA</div>
+                </div>
+                <div class="perfil-logros-fila">
+                    <div class="logro-box">LOGROS</div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- PANEL DE DETALLES DEL LUGAR -->
-    <div class="detalle-lugar" id="panel-detalle">
-        <div class="detalle-contenido-superior"
-            style="display: flex; align-items: center; padding-top: 15px; position: sticky; top: 0; z-index: 10; background: var(--bg-blur); backdrop-filter: blur(20px);">
-            <button id="btn-volver"
-                style="background: rgba(6, 71, 52, 0.1); border: none; color: var(--forest); font-weight: bold; padding: 10px 20px; border-radius: 100px; cursor: pointer;">Volver</button>
-            <h2 id="detalle-titulo" style="margin: 0; flex: 1; text-align: center; padding-right: 40px;">Nombre del
-                Lugar</h2>
+    <!-- VENTANA DE DETALLES DEL LUGAR (Diseño Híbrido) -->
+    <div id="ventana-lugar" class="ventana-lugar vista-oculta">
+        <button id="btn-cerrar-lugar" class="btn-cerrar-ventana"
+            style="top: 10px; right: 10px; background: rgba(0,0,0,0.5);"><i data-lucide="x"></i></button>
+
+        <div class="lugar-top-half">
+            <div class="header-vista lugar-titulo" id="detalle-titulo">NOMBRE DEL LUGAR</div>
+            <img src="" id="detalle-img" class="lugar-imagen-fondo" alt="Foto">
         </div>
 
-        <div class="detalle-img-container" id="detalle-img">
-            <img src="imagenes/img1.jpg" alt="Lugar">
-        </div>
-
-        <div class="detalle-contenido">
-            <div class="texto-fase-1">
-                <p id="detalle-descripcion" style="font-size: 15px; line-height: 1.6;"></p>
-                <hr style="border: none; border-top: 1px solid rgba(6,71,52,0.1); margin: 30px 0;">
-
-                <h3>Experiencias en este lugar</h3>
-                <div id="comentarios-lugar-oficial" style="margin-bottom: 20px;">
-                    <p style="color: #666; font-size: 13px;">Aún no hay comentarios. Cuéntanos tu experiencia.</p>
+        <div class="lugar-bottom-half">
+            <div class="lugar-col-izq">
+                <div class="etiqueta-lugar">DESCRIPCIÓN</div>
+                <p id="detalle-descripcion" class="texto-blanco"></p>
+                <div class="etiqueta-lugar" style="margin-top:20px;">RESEÑAS</div>
+                <div class="resena-item">
+                    <div class="circulo-foto">FOTO</div>
+                    <div class="resena-contenido">
+                        <div class="resena-nombre">NOMBRE</div>
+                        <div class="linea-placeholder verde"></div>
+                    </div>
                 </div>
-                <div class="input-comentario-row">
-                    <input type="text" id="input-comentario-lugar" placeholder="¿Qué te pareció este lugar?">
-                    <button id="btn-comentar-lugar"
-                        style="background: var(--forest); color: var(--leaf);">Comentar</button>
+            </div>
+
+            <div class="lugar-col-der">
+                <div class="col-servicios">
+                    <button class="btn-servicio">SERVICIOS</button>
+                    <button class="btn-servicio">HOTEL</button>
+                    <button class="btn-servicio">COMIDA</button>
+                    <button class="btn-servicio">ARTESANIA</button>
+                </div>
+                <div class="col-fotos">
+                    <div class="grid-fotos-pequenas">
+                        <div class="foto-sq">FOTOS</div>
+                        <div class="foto-sq">FOTOS</div>
+                        <div class="foto-sq">FOTOS</div>
+                        <div class="foto-sq">FOTOS</div>
+                    </div>
+                    <div class="foto-sq ancha">...</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- BARRA DE NAVEGACIÓN INFERIOR -->
-    <nav class="bottom-nav">
-        <div class="nav-indicator"></div>
-        <a href="#" class="nav-item active" data-target="inicio-container">
-            <i data-lucide="map"></i>
-            <span>Mapa</span>
-        </a>
-        <a href="#" class="nav-item" data-target="eventos-container">
-            <i data-lucide="calendar"></i>
-            <span>Eventos</span>
-        </a>
-        <a href="#" class="nav-item" data-target="chat-container">
-            <i data-lucide="users"></i>
-            <span>Social</span>
-        </a>
-        <a href="#" class="nav-item" data-target="perfil-container">
-            <i data-lucide="user"></i>
-            <span>Perfil</span>
-        </a>
-    </nav>
-
-    <!-- ==========================================
-         SISTEMA DE POP-UPS (MODALES ESTILO FIGMA)
-    =========================================== -->
-
-    <!-- Pop-up: Agregar Lugar -->
-    <div class="modal-overlay" id="modal-agregar-lugar">
-        <div class="modal-content">
-            <h2>Añadir Nuevo Lugar</h2>
-            <p style="font-size:14px; margin-bottom:15px; color:#555;">Mueve el mapa a la ubicación exacta antes de
-                guardar.</p>
-            <input type="text" id="nuevo-lugar-titulo" placeholder="Nombre del lugar (Ej: Laguna de Paca)">
-            <textarea id="nuevo-lugar-desc" placeholder="Descripción breve..." style="height: 80px;"></textarea>
-            <div style="margin: 10px 0;">
-                <label style="font-size: 13px; color: var(--forest); font-weight: bold;">Foto del lugar
-                    (Opcional):</label>
-                <input type="file" id="foto-lugar" accept="image/*"
-                    style="display: block; margin-top: 5px; font-size: 13px;">
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="btn-secundario" id="btn-cerrar-modal-lugar">Cancelar</button>
-                <button class="btn-principal" id="btn-guardar-lugar">Guardar Lugar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Pop-up: Agregar Evento -->
-    <div class="modal-overlay" id="modal-agregar-evento">
-        <div class="modal-content">
-            <h2>Eventos del Día</h2>
-            <p style="font-size:14px; margin-bottom:15px; color:#555; font-weight:600;" id="evento-fecha-seleccionada">
-            </p>
-
-            <div id="lista-eventos-dia" style="max-height: 150px; overflow-y: auto; margin-bottom: 20px;">
-                <p style="font-size: 13px; color: #888;">No hay eventos aún.</p>
-            </div>
-
-            <div id="seccion-admin-evento" class="vista-oculta">
-                <hr style="border: none; border-top: 1px solid rgba(6,71,52,0.1); margin: 20px 0;">
-                <h3 style="margin-top:0; font-size: 16px;">Añadir Nuevo Evento</h3>
-                <input type="text" id="nuevo-evento-titulo" placeholder="Título del evento">
-                <textarea id="nuevo-evento-desc" placeholder="Detalles de la salida..."
-                    style="height: 60px;"></textarea>
-                <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button class="btn-principal" id="btn-guardar-evento">Guardar</button>
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="btn-secundario" id="btn-cerrar-modal-evento" style="width: 100%;">Cerrar Ventana</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Pop-up: Nueva Publicación (Feed Social) -->
-    <div class="modal-overlay" id="modal-nueva-publicacion">
-        <div class="modal-content">
-            <h2 style="color: var(--forest); margin-top: 0;">Nueva Publicación</h2>
-            <input type="text" id="titulo" placeholder="Ej: Reforestación en Concepción">
-            <input type="text" id="lugar" placeholder="Lugar exacto de la salida">
-            <textarea id="descripcion" placeholder="Describe tu experiencia..." style="height: 100px;"></textarea>
-            <div style="margin: 10px 0;">
-                <label style="font-size: 13px; color: var(--forest); font-weight: bold;">Sube una foto
-                    (Opcional):</label>
-                <input type="file" id="foto-muro" accept="image/*"
-                    style="display: block; margin-top: 5px; font-size: 13px;">
-            </div>
+    <!-- MODAL CREAR PUBLICACIÓN (Reutilizado del original) -->
+    <div class="modal-overlay vista-oculta" id="modal-nueva-publicacion">
+        <div class="modal-content" style="background: var(--forest); color: white;">
+            <h2 style="margin-top: 0;">Nueva Publicación</h2>
+            <input type="text" id="titulo" placeholder="Ej: Reforestación en Concepción" class="input-verde">
+            <input type="text" id="lugar" placeholder="Lugar exacto de la salida" class="input-verde">
+            <textarea id="descripcion" placeholder="Describe tu experiencia..." style="height: 100px;"
+                class="input-verde"></textarea>
             <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn-secundario" id="btn-cerrar-modal-publicacion">Cancelar</button>
-                <button class="btn-principal" id="btn-publicar">Publicar en Raíz</button>
+                <button class="btn-servicio" id="btn-cerrar-modal-publicacion">Cancelar</button>
+                <button class="btn-servicio" id="btn-publicar"
+                    style="background: var(--leaf); color: var(--forest);">Publicar en Raíz</button>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notifications -->
-    <div id="toast-container"></div>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>lucide.createIcons();</script>
     <script type="module" src="app.js"></script>
