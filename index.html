@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -12,8 +13,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    
+
     <!-- Barra Lateral Exclusiva de PC -->
     <aside class="sidebar-desktop">
         <div class="sidebar-logo">Raíz</div>
@@ -38,9 +40,9 @@
         <span>+</span>
     </button>
 
-    <!-- VISTAS PRINCIPALES -->
+    <!-- VISTAS PRINCIPALES (Ahora con desplazamiento lateral) -->
     <main id="main-content">
-        
+
         <!-- VISTA 1: MAPA Y MURO -->
         <div id="inicio-container" class="vista-activa">
             <div class="sheet-container">
@@ -65,15 +67,22 @@
                     <div id="info-rutas" class="rutas-info">
                         <h2>Puntos de Conservación</h2>
                         <ul>
-                            <li>El Vivero Amor Nativas en la Provincia de Concepción produce plantas de Quinuales y tiene el objetivo de aprender a propagar especies nativas.</li>
-                            <li>La Ruta Andino Selvatica ofrece trekking por la puna húmeda y los bosques de neblina en La Unión-Huasahuasi.</li>
-                            <li>Ilish Pichacoto es un área con zonas arqueológicas, camping y un camino de reflexión, siendo la primera área de conservación de Junín administrada por la comunidad Campesina de Saño.</li>
-                            <li>La Casa Hospedaje Rumiwasi promueve la agricultura regenerativa y resguarda la cultura de la comunidad en Saño.</li>
-                            <li>El Proyecto de Restauración Vegetal Asociación Villasol-Yauli cuenta con 27 hectáreas de bosques de Quinual para restaurar espacios.</li>
-                            <li>En Ñahuinpuquio se realiza la plantación comunitaria de más de 3000 quinuales al año en medio de agricultura regenerativa y qochas.</li>
-                            <li>Wasi Kamaq es un espacio de innovación ancestral con hornos portátiles y plantas medicinales ubicado en San Jerónimo.</li>
+                            <li>El Vivero Amor Nativas en la Provincia de Concepción produce plantas de Quinuales y
+                                tiene el objetivo de aprender a propagar especies nativas.</li>
+                            <li>La Ruta Andino Selvatica ofrece trekking por la puna húmeda y los bosques de neblina en
+                                La Unión-Huasahuasi.</li>
+                            <li>Ilish Pichacoto es un área con zonas arqueológicas, camping y un camino de reflexión,
+                                siendo la primera área de conservación de Junín administrada por la comunidad Campesina
+                                de Saño.</li>
+                            <li>La Casa Hospedaje Rumiwasi promueve la agricultura regenerativa y resguarda la cultura
+                                de la comunidad en Saño.</li>
+                            <li>El Proyecto de Restauración Vegetal Asociación Villasol-Yauli cuenta con 27 hectáreas de
+                                bosques de Quinual para restaurar espacios.</li>
+                            <li>En Ñahuinpuquio se realiza la plantación comunitaria de más de 3000 quinuales al año en
+                                medio de agricultura regenerativa y qochas.</li>
+                            <li>Wasi Kamaq es un espacio de innovación ancestral con hornos portátiles y plantas
+                                medicinales ubicado en San Jerónimo.</li>
                         </ul>
-                    </div>
                     </div>
                 </div>
             </div>
@@ -87,27 +96,41 @@
                     <div class="drag-indicator"></div>
                     <h1>Eventos y Foros</h1>
                     <p class="subtitle">Coordina salidas y conversa con la comunidad.</p>
-                    
-                    <div class="calendario-section" style="background: #fff; padding: 20px; border-radius: 20px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
-                        <div class="calendario-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <button id="btn-mes-anterior" style="background:none; border:none; font-size:24px; cursor:pointer; font-weight:bold; color:var(--forest);">&lt;</button>
+
+                    <div class="calendario-section"
+                        style="background: #fff; padding: 20px; border-radius: 20px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                        <div class="calendario-header"
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <button id="btn-mes-anterior"
+                                style="background:none; border:none; font-size:24px; cursor:pointer; font-weight:bold; color:var(--forest);">&lt;</button>
                             <h2 id="mes-año-actual" style="margin:0;">Mes Año</h2>
-                            <button id="btn-mes-siguiente" style="background:none; border:none; font-size:24px; cursor:pointer; font-weight:bold; color:var(--forest);">&gt;</button>
+                            <button id="btn-mes-siguiente"
+                                style="background:none; border:none; font-size:24px; cursor:pointer; font-weight:bold; color:var(--forest);">&gt;</button>
                         </div>
-                        <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: 700; color: rgba(6,71,52,0.5); font-size: 13px; margin-bottom: 10px;">
-                            <div>Dom</div><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div>
+                        <div
+                            style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: 700; color: rgba(6,71,52,0.5); font-size: 13px; margin-bottom: 10px;">
+                            <div>Dom</div>
+                            <div>Lun</div>
+                            <div>Mar</div>
+                            <div>Mié</div>
+                            <div>Jue</div>
+                            <div>Vie</div>
+                            <div>Sáb</div>
                         </div>
-                        <div class="calendario-grid" id="calendario-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;">
+                        <div class="calendario-grid" id="calendario-grid"
+                            style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;">
                             <!-- Generado por JS -->
                         </div>
-                        <p style="font-size: 13px; color: #666; margin-top:15px; text-align: center;">Haz clic en un día para proponer o ver eventos.</p>
+                        <p style="font-size: 13px; color: #666; margin-top:15px; text-align: center;">Haz clic en un día
+                            para proponer o ver eventos.</p>
                     </div>
 
                     <div class="foro-section">
                         <h2>Foro de la Comunidad</h2>
                         <div class="form-container">
                             <input type="text" id="foro-titulo" placeholder="Ej: Ideas para el fin de semana...">
-                            <textarea id="foro-desc" placeholder="Escribe tu mensaje..." style="height: 80px;"></textarea>
+                            <textarea id="foro-desc" placeholder="Escribe tu mensaje..."
+                                style="height: 80px;"></textarea>
                             <button id="btn-publicar-foro" class="btn-principal">Crear Tema</button>
                         </div>
                         <div id="lista-temas-foro"></div>
@@ -118,37 +141,40 @@
 
         <!-- VISTA 2: RAÍZ SOCIAL -->
         <div id="chat-container" class="vista-oculta social-bg">
-            <!-- Feed Raíz Social -->
             <div id="social-feed-view" class="social-view active-view">
                 <div class="social-topbar">
                     <h1 class="social-title">Social</h1>
                     <div style="display: flex; gap: 15px; align-items: center;">
-                        <button class="icon-btn" id="btn-add-friend" title="Añadir amigos"><i data-lucide="user-plus"></i></button>
-                        <button class="icon-btn" id="btn-open-chats" title="Mensajes"><i data-lucide="message-circle"></i></button>
+                        <button class="icon-btn" id="btn-add-friend" title="Añadir amigos"><i
+                                data-lucide="user-plus"></i></button>
+                        <button class="icon-btn" id="btn-open-chats" title="Mensajes"><i
+                                data-lucide="message-circle"></i></button>
                         <button class="icon-btn" title="Menú"><i data-lucide="menu"></i></button>
                     </div>
                 </div>
 
-                <!-- Input Rápido para Publicar -->
-                <div class="quick-post-container" id="btn-quick-post" style="display:flex; align-items:center; gap: 15px; padding: 15px 20px; border-bottom: 1px solid rgba(224,255,194,0.1); cursor: pointer;">
-                    <div class="post-avatar" style="display:flex; align-items:center; justify-content:center; color:var(--forest); font-weight:bold; width: 45px; height: 45px; font-size: 18px;">U</div>
-                    <div style="flex: 1; border-radius: 30px; border: 1px solid rgba(224,255,194,0.2); background: rgba(0,0,0,0.2); color: var(--leaf); padding: 12px 20px; font-size: 15px;">¿Qué vas a compartir hoy?</div>
+                <div class="quick-post-container" id="btn-quick-post"
+                    style="display:flex; align-items:center; gap: 15px; padding: 15px 20px; border-bottom: 1px solid rgba(224,255,194,0.1); cursor: pointer;">
+                    <div class="post-avatar"
+                        style="display:flex; align-items:center; justify-content:center; color:var(--forest); font-weight:bold; width: 45px; height: 45px; font-size: 18px;">
+                        U</div>
+                    <div
+                        style="flex: 1; border-radius: 30px; border: 1px solid rgba(224,255,194,0.2); background: rgba(0,0,0,0.2); color: var(--leaf); padding: 12px 20px; font-size: 15px;">
+                        ¿Qué vas a compartir hoy?</div>
                     <i data-lucide="image" style="color: var(--leaf); opacity: 0.8;"></i>
                 </div>
 
                 <div class="social-feed-content" id="social-feed-content">
                     <!-- Posts generados por JS -->
                 </div>
-                
-                <!-- FAB Agregar Publicación (Opcional, pero lo dejamos oculto o lo cambiamos) -->
+
                 <button class="fab-agregar-lugar vista-oculta" id="btn-nueva-publicacion" style="bottom: 90px;">
                     <i data-lucide="plus" style="color: var(--forest); width: 28px; height: 28px;"></i>
                 </button>
             </div>
 
-            <!-- Chat List (Bottom Sheet) -->
             <div id="social-chats-panel" class="chat-sheet-panel">
-                <div class="drag-indicator"></div>
+                <div class="drag-indicator" style="background: rgba(255,255,255,0.3);"></div>
                 <div class="social-topbar">
                     <button class="icon-btn" id="btn-close-chats"><i data-lucide="chevron-down"></i></button>
                     <h1 class="social-title">Chat Raíz</h1>
@@ -161,9 +187,9 @@
                     <div id="chats-contactos-list"></div>
                 </div>
             </div>
-            
-            <!-- Chat Activo 1a1 (Panel lateral o superpuesto) -->
-            <div id="chat-activo-panel" class="chat-sheet-panel" style="z-index: 3001; transform: translateX(100%);">
+
+            <div id="chat-activo-panel" class="chat-sheet-panel"
+                style="z-index: 3001; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);">
                 <div class="social-topbar">
                     <button class="icon-btn" id="btn-close-chat-activo"><i data-lucide="arrow-left"></i></button>
                     <h1 class="social-title" id="chat-activo-nombre">Usuario</h1>
@@ -175,39 +201,6 @@
                     <button class="icon-btn" id="btn-enviar-mensaje"><i data-lucide="send"></i></button>
                 </div>
             </div>
-
-            <!-- Perfil SoySopa (Bottom Sheet) -->
-            <div id="social-profile-panel" class="chat-sheet-panel">
-                <div class="drag-indicator"></div>
-                <h1 class="social-title" id="perfil-ext-titulo" style="text-align: center; margin-top: 10px;">Perfil</h1>
-                <div class="perfil-ext-header">
-                    <img src="" id="perfil-ext-img" alt="Avatar">
-                </div>
-                <div class="perfil-ext-body">
-                    <div class="perfil-ext-info">
-                        <span id="perfil-ext-handle">@Usuario</span>
-                        <span id="perfil-ext-fecha" style="font-size: 12px;">Miembro desde 2024</span>
-                    </div>
-                    <div class="perfil-ext-stats">
-                        <div><strong id="perfil-ext-seguidores">0</strong><br>Seguidores</div>
-                        <div><strong id="perfil-ext-siguiendo">0</strong><br>Siguiendo</div>
-                        <button class="btn-agregar-amigo" id="btn-agregar-amigo">
-                            AGREGAR AMIGO <i data-lucide="user-plus" style="width: 16px; height: 16px; margin-left: 5px;"></i>
-                        </button>
-                    </div>
-                    <div class="perfil-ext-notas">
-                        <textarea placeholder="Agrega una nota..." readonly></textarea>
-                        <div class="nota-extra"></div>
-                    </div>
-                    <div class="perfil-ext-logros">
-                        <h3 style="margin:0 0 10px 0; font-size:14px;">Logros</h3>
-                        <div style="display:flex; gap:10px;">
-                            <i data-lucide="award" style="color:#FFD700; width:30px; height:30px;"></i>
-                            <i data-lucide="star" style="color:#FFD700; width:30px; height:30px;"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- VISTA 3: PERFIL -->
@@ -216,61 +209,70 @@
                 <div class="drag-indicator-desktop"></div>
                 <div class="content-wrapper" style="text-align: center; padding-top: 50px;">
                     <div class="drag-indicator"></div>
-                    
+
                     <div id="perfil-desconectado">
-                        <div style="width: 100px; height: 100px; background: #eee; border-radius: 50%; color: #aaa; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 20px auto;">?</div>
+                        <div
+                            style="width: 100px; height: 100px; background: #eee; border-radius: 50%; color: #aaa; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 20px auto;">
+                            ?</div>
                         <h1>Únete a la Comunidad</h1>
                         <p class="subtitle">Inicia sesión para interactuar con la comunidad.</p>
-                        <button id="btn-login-google" class="btn-principal" style="max-width: 200px; margin-top: 20px;">Iniciar Sesión con Google</button>
+                        <button id="btn-login-google" class="btn-principal"
+                            style="max-width: 200px; margin-top: 20px;">Iniciar Sesión con Google</button>
                     </div>
 
                     <div id="perfil-conectado" class="vista-oculta">
-                        <img id="perfil-foto" src="" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin: 0 auto 20px auto; border: 3px solid var(--forest);">
+                        <img id="perfil-foto" src=""
+                            style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin: 0 auto 20px auto; border: 3px solid var(--forest);">
                         <h1 id="perfil-nombre">Mi Perfil Raíz</h1>
                         <p class="subtitle" id="perfil-email">correo@ejemplo.com</p>
-                        <span id="badge-admin" class="vista-oculta" style="background: var(--forest); color: var(--leaf); padding: 5px 15px; border-radius: 100px; font-size: 12px; font-weight: bold; margin-bottom: 20px; display: inline-block;">Administrador (Owner)</span>
+                        <span id="badge-admin" class="vista-oculta"
+                            style="background: var(--forest); color: var(--leaf); padding: 5px 15px; border-radius: 100px; font-size: 12px; font-weight: bold; margin-bottom: 20px; display: inline-block;">Administrador
+                            (Owner)</span>
                         <br>
-                        <button id="btn-logout" class="btn-secundario" style="max-width: 200px; margin-top: 20px;">Cerrar Sesión</button>
+                        <button id="btn-logout" class="btn-secundario"
+                            style="max-width: 200px; margin-top: 20px;">Cerrar Sesión</button>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- PANEL DE DETALLES DEL LUGAR (El que se trababa) -->
+    <!-- PANEL DE DETALLES DEL LUGAR -->
     <div class="detalle-lugar" id="panel-detalle">
-        <div class="detalle-contenido-superior" style="display: flex; align-items: center; padding-top: 15px; position: sticky; top: 0; z-index: 10; background: var(--bg-blur); backdrop-filter: blur(20px);">
-            <!-- Botón de Volver explícito -->
-            <button id="btn-volver" style="background: rgba(6, 71, 52, 0.1); border: none; color: var(--forest); font-weight: bold; padding: 10px 20px; border-radius: 100px; cursor: pointer;">Volver</button>
-            <h2 id="detalle-titulo" style="margin: 0; flex: 1; text-align: center; padding-right: 40px;">Nombre del Lugar</h2>
+        <div class="detalle-contenido-superior"
+            style="display: flex; align-items: center; padding-top: 15px; position: sticky; top: 0; z-index: 10; background: var(--bg-blur); backdrop-filter: blur(20px);">
+            <button id="btn-volver"
+                style="background: rgba(6, 71, 52, 0.1); border: none; color: var(--forest); font-weight: bold; padding: 10px 20px; border-radius: 100px; cursor: pointer;">Volver</button>
+            <h2 id="detalle-titulo" style="margin: 0; flex: 1; text-align: center; padding-right: 40px;">Nombre del
+                Lugar</h2>
         </div>
 
         <div class="detalle-img-container" id="detalle-img">
             <img src="imagenes/img1.jpg" alt="Lugar">
         </div>
-        
+
         <div class="detalle-contenido">
             <div class="texto-fase-1">
                 <p id="detalle-descripcion" style="font-size: 15px; line-height: 1.6;"></p>
                 <hr style="border: none; border-top: 1px solid rgba(6,71,52,0.1); margin: 30px 0;">
-                
-                <!-- Comentarios del Lugar -->
+
                 <h3>Experiencias en este lugar</h3>
                 <div id="comentarios-lugar-oficial" style="margin-bottom: 20px;">
                     <p style="color: #666; font-size: 13px;">Aún no hay comentarios. Cuéntanos tu experiencia.</p>
                 </div>
                 <div class="input-comentario-row">
                     <input type="text" id="input-comentario-lugar" placeholder="¿Qué te pareció este lugar?">
-                    <button id="btn-comentar-lugar" style="background: var(--forest); color: var(--leaf);">Comentar</button>
+                    <button id="btn-comentar-lugar"
+                        style="background: var(--forest); color: var(--leaf);">Comentar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- BARRA DE NAVEGACIÓN INFERIOR (CELULAR) -->
+    <!-- BARRA DE NAVEGACIÓN INFERIOR -->
     <nav class="bottom-nav">
         <div class="nav-indicator"></div>
-        <a href="#" class="nav-item active" data-target="mapa-container">
+        <a href="#" class="nav-item active" data-target="inicio-container">
             <i data-lucide="map"></i>
             <span>Mapa</span>
         </a>
@@ -288,16 +290,23 @@
         </a>
     </nav>
 
-    <!-- Modal Agregar Lugar -->
-    <div class="modal-overlay vista-oculta" id="modal-agregar-lugar">
+    <!-- ==========================================
+         SISTEMA DE POP-UPS (MODALES ESTILO FIGMA)
+    =========================================== -->
+
+    <!-- Pop-up: Agregar Lugar -->
+    <div class="modal-overlay" id="modal-agregar-lugar">
         <div class="modal-content">
             <h2>Añadir Nuevo Lugar</h2>
-            <p style="font-size:14px; margin-bottom:15px; color:#555;">Mueve el mapa a la ubicación exacta antes de guardar.</p>
+            <p style="font-size:14px; margin-bottom:15px; color:#555;">Mueve el mapa a la ubicación exacta antes de
+                guardar.</p>
             <input type="text" id="nuevo-lugar-titulo" placeholder="Nombre del lugar (Ej: Laguna de Paca)">
             <textarea id="nuevo-lugar-desc" placeholder="Descripción breve..." style="height: 80px;"></textarea>
             <div style="margin: 10px 0;">
-                <label style="font-size: 13px; color: var(--forest); font-weight: bold;">Foto del lugar (Opcional):</label>
-                <input type="file" id="foto-lugar" accept="image/*" style="display: block; margin-top: 5px; font-size: 13px;">
+                <label style="font-size: 13px; color: var(--forest); font-weight: bold;">Foto del lugar
+                    (Opcional):</label>
+                <input type="file" id="foto-lugar" accept="image/*"
+                    style="display: block; margin-top: 5px; font-size: 13px;">
             </div>
             <div style="display: flex; gap: 10px; margin-top: 20px;">
                 <button class="btn-secundario" id="btn-cerrar-modal-lugar">Cancelar</button>
@@ -306,42 +315,46 @@
         </div>
     </div>
 
-    <!-- Modal Agregar Evento -->
-    <div class="modal-overlay vista-oculta" id="modal-agregar-evento">
+    <!-- Pop-up: Agregar Evento -->
+    <div class="modal-overlay" id="modal-agregar-evento">
         <div class="modal-content">
             <h2>Eventos del Día</h2>
-            <p style="font-size:14px; margin-bottom:15px; color:#555; font-weight:600;" id="evento-fecha-seleccionada"></p>
-            
+            <p style="font-size:14px; margin-bottom:15px; color:#555; font-weight:600;" id="evento-fecha-seleccionada">
+            </p>
+
             <div id="lista-eventos-dia" style="max-height: 150px; overflow-y: auto; margin-bottom: 20px;">
                 <p style="font-size: 13px; color: #888;">No hay eventos aún.</p>
             </div>
-            
+
             <div id="seccion-admin-evento" class="vista-oculta">
                 <hr style="border: none; border-top: 1px solid rgba(6,71,52,0.1); margin: 20px 0;">
-                <h3 style="margin-top:0; font-size: 16px;">Añadir Nuevo Evento (Solo Admins)</h3>
+                <h3 style="margin-top:0; font-size: 16px;">Añadir Nuevo Evento</h3>
                 <input type="text" id="nuevo-evento-titulo" placeholder="Título del evento">
-                <textarea id="nuevo-evento-desc" placeholder="Detalles de la salida..." style="height: 60px;"></textarea>
+                <textarea id="nuevo-evento-desc" placeholder="Detalles de la salida..."
+                    style="height: 60px;"></textarea>
                 <div style="display: flex; gap: 10px; margin-top: 20px;">
                     <button class="btn-principal" id="btn-guardar-evento">Guardar</button>
                 </div>
             </div>
-            
+
             <div style="display: flex; gap: 10px; margin-top: 20px;">
                 <button class="btn-secundario" id="btn-cerrar-modal-evento" style="width: 100%;">Cerrar Ventana</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal Nueva Publicación (Feed Social) -->
-    <div class="modal-overlay vista-oculta" id="modal-nueva-publicacion">
+    <!-- Pop-up: Nueva Publicación (Feed Social) -->
+    <div class="modal-overlay" id="modal-nueva-publicacion">
         <div class="modal-content">
             <h2 style="color: var(--forest); margin-top: 0;">Nueva Publicación</h2>
             <input type="text" id="titulo" placeholder="Ej: Reforestación en Concepción">
             <input type="text" id="lugar" placeholder="Lugar exacto de la salida">
-            <textarea id="descripcion" placeholder="Describe tu experiencia y el impacto ambiental..." style="height: 100px;"></textarea>
+            <textarea id="descripcion" placeholder="Describe tu experiencia..." style="height: 100px;"></textarea>
             <div style="margin: 10px 0;">
-                <label style="font-size: 13px; color: var(--forest); font-weight: bold;">Sube una foto (Opcional):</label>
-                <input type="file" id="foto-muro" accept="image/*" style="display: block; margin-top: 5px; font-size: 13px;">
+                <label style="font-size: 13px; color: var(--forest); font-weight: bold;">Sube una foto
+                    (Opcional):</label>
+                <input type="file" id="foto-muro" accept="image/*"
+                    style="display: block; margin-top: 5px; font-size: 13px;">
             </div>
             <div style="display: flex; gap: 10px; margin-top: 15px;">
                 <button class="btn-secundario" id="btn-cerrar-modal-publicacion">Cancelar</button>
@@ -353,12 +366,11 @@
     <!-- Toast Notifications -->
     <div id="toast-container"></div>
 
-    <!-- Swiper JS -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>lucide.createIcons();</script>
-    <!-- Lógica de la App -->
     <script type="module" src="app.js"></script>
 </body>
+
 </html>
